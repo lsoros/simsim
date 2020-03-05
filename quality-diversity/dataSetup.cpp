@@ -1,50 +1,21 @@
 #include "prototype_data.h"
 
-Room createRandomRoom(){
-	
-	
-	Room r;
-	int totalCost = 0;
-	//HouseObj[13] roomObjs;
-
-	int i;
-	for(i=0;i<13;i++){
-		/*
-		HouseObj o;
-
-		o.name = OBJECT_TYPE_LIST[i];	//set name
-		if(o.name == "table"){o.size = 2;}		//set size
-		else if(o.name == "bed"){o.size = 4;}
-		else if(o.name == "sofa"){o.size = 2;}
-		else{o.size = 1;}
-		o.cost = OBJECT_COST_LIST[i];		//set cost
-		o.num = rand() % NUM_OBJ_RANGE[1] + NUM_OBJ_RANGE[0];	//set count of obj
-		totalCost += (o.cost*o.num);
-		*/
-
-		r.furnitureTally[i] = rand() % NUM_OBJ_RANGE[1] + NUM_OBJ_RANGE[0];	//set count of obj
-		totalCost += (OBJECT_COST_LIST[i]*r.furnitureTally[i]);
-
-		//roomObjs[i] = o;
-	}
-
-	float simHealth = ((double) rand()/(RAND_MAX));	//random value between 0 and 1
-
-	
-	//r.furniture = roomObjs;
-	r.totalCost = totalCost;
-	r.simHealth = simHealth;
-
-	return r;
-}
-
-void showRoom(Room r){
-	int i;
+void showUltraRoom(UltraRoom ur){
 	cout << "Furniture Count: " << endl;
-	for(i=0;i<13;i++){
-		cout << "\t" << OBJECT_TYPE_LIST[i] << " = " << r.furnitureTally[i] << endl;
+	
+	unordered_map<string, int> furnitureTally = boost::get<unordered_map<string, int> >(ur.properties.at("Furniture"));
+	unordered_map<string, int> :: iterator itr;
+	for(itr = furnitureTally.begin(); itr != furnitureTally.end(); itr++){
+		cout << "\t" << itr->first << " = " << itr->second << endl;
 	}
+	
+	int tCost = boost::get<int>(ur.properties.at("TotalCost"));
+	cout << "Total Cost: $" << tCost << endl;
+	double sHealth = boost::get<double>(ur.properties.at("SimHealth"));
+	cout << "Sim Health: " << sHealth*100.0f << "%" << endl;
 
-	cout << "Total Cost: $" << r.totalCost << endl;
-	cout << "Sim Health: " << r.simHealth*100.0f << "%" << endl;
 }
+
+
+
+
