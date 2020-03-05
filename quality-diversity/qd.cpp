@@ -5,8 +5,6 @@ int main(){
 	srand(time(NULL));
 	UltraRoom sampleSet[100];
 
-
-
 	int i;
 	for(i=0;i<100;i++){
 		cout << "ROOM #" << i+1 << endl;

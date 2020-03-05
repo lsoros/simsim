@@ -1,0 +1,4 @@
+1. `git pull` - update the local repository
+2. `git add .` - add local changes
+3. `git commit -m "?????"` - add update comment
+4. `git push origin master` - push local changes to master repository
