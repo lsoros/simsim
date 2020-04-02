@@ -1,7 +1,7 @@
 #include "prototype_data.h"
 
 int main(){
-
+	//make 100 rooms
 	srand(time(NULL));
 	UltraRoom sampleSet[100];
 

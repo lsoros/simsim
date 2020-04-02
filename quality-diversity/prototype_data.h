@@ -34,6 +34,7 @@ class UltraRoom{
 	UltraRoom(){
 		int totalCost = 0;
 
+		//tally of the furniture (random integers for each object)
 		int i;
 		unordered_map<string, int> furnitureTally;
 		for(i=0;i<13;i++){
@@ -42,8 +43,10 @@ class UltraRoom{
 			totalCost += ct*OBJECT_COST_LIST[i];
 		}
 
+		//sim health value (random double)
 		double shealth = ((double) rand()/(RAND_MAX));
 
+		//assignments
 		properties["Furniture"] = furnitureTally;
 		properties["TotalCost"] = totalCost;			//set total cost of the room
 		properties["SimHealth"] = shealth;				//random value between 0 and 1
