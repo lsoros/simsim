@@ -29,6 +29,7 @@ public:
     //getter for obtaining Object name
     const string& getName() const {return name;}
     const House* getHouse() const {return house;}
+    const tuple<float, float> getCoords() const{return coordinates;}
 
     // functions that change the color, cost and current room the object is in
     void changeColor(const string& newcolor) {color = newcolor;}
@@ -80,11 +81,11 @@ public:
     void current_house(House* newhouse);
 
     //simulation functions
-    bool isDead(){return needs[0] == 0 || needs[3] == 0;};    //check if the sim is dead (hunger = 0 or energy = 0)
+    bool isDead(){return needs[0] == 0 || needs[3] == 0;}   //check if the sim is dead (hunger = 0 or energy = 0)
     void alterNeed(int needIndex, int amt);             	//alters the value of a need by some amount
     
-    bool hasTarget(){return target != nullptr;};		//check if target object is set
-    void setTarget(Object* o){target = o;};				//sets the current target object
+    bool hasTarget(){return target != nullptr;}		//check if target object is set
+    void setTarget(Object* o){target = o;}				//sets the current target object
     void atTarget();									//checks if can interact with a target
     
     

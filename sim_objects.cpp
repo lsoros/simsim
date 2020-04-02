@@ -122,12 +122,12 @@ void Sim::atTarget(){
         return;
 
     //if not at the target location - cancel
-    if(coordinates[0] != target.coordinates[0] || coordinates[1] != target.coordinates[1] )
+    if(get<0>(coordinates) != get<0>(target->getCoords()) || get<1>(coordinates) != get<1>(target->getCoords()) )
         return;
 
     //if at the target - use it and remove the target
-    interactWith(target);
-    target = null;
+    interactWith(*target);
+    target = nullptr;
     return;
 }
 
