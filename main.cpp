@@ -1,11 +1,12 @@
-// Second draft commit of sim sim
-// comments for program
-// range tuple, and use a randomized value for range needs
+// Fourth commit to program
+// some existing functions were changed (placeSim), and some were added to Room and Sim. Sims and objects now that coordinates, and the sim can see what object they are closest to, and interact with all the objects to fufill their needs
+// might change so that a sim can identify their lowest need and only replenish that
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <string>
+#include <cmath>
 using namespace std;
 
 // class forward declarations
@@ -25,7 +26,7 @@ class Object {
     
 public:
     // Object constructor, initializes with name and vector of need effects, and two pointers that will point to the house and room they are in
-    Object(const string& name, vector<int>& effect) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false) {}
+    Object(const string& name, vector<int>& effect, tuple<float, float> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
     
     //getter for obtaining Object name
     const string& getName() const {return name;}
@@ -38,6 +39,7 @@ public:
     // function to obtain the effects the Object has on a Sim
     const int getNeedValue(int i) {return effect[i];}
     // bool to see if the object is in a room
+    tuple<float, float> getCoordinates() {return coordinates;}
     bool inRoom() {return hasRoom;}
     
     
@@ -49,7 +51,7 @@ private:
     House* house;
     Room* room;
     bool hasRoom;
-    tuple <float, float> coordinates;
+    tuple<float, float> coordinates;
     
 };
 
@@ -74,6 +76,9 @@ public:
     void interactWith(Object& object);
     void current_room(Room* newroom);
     void current_house(House* newhouse);
+    void closestObject();
+    void changeCoordinates(tuple<float, float>& xy);
+    void fufillNeeds();
     
 private:
     //needs: hunger, hygeine, bladder, energy, social, fun
@@ -101,7 +106,8 @@ public:
     // forward declarations of Room methods
     void changeHouse(House* newhouse);
     void placeSim(Sim& sim);
-        
+    Object* closestToSim(tuple<float,float>& coordinates, Sim& sim);
+    void interactwithObjects(Sim& sim);
     //getter for obtaining Room name
     const string& getName() {return name;}
     // method that returns house pointer
@@ -236,7 +242,13 @@ public:
                 break;
             }
         }
-        
+        /*
+        if (simindex != sims.size()){
+        //  if sim exists in room and needs to be removed, its coordinates are reset to be 0,0 for when they are placed. might not be necessary, since placeSim does this
+            tuple<float,float> newxy(0,0);
+            sim->changeCoordinates(newxy);
+        }
+         */
         while (simindex != sims.size()){
             // loop that overwrites Sim to be removed, and pops back last position in vector. moves everything down and keeps order
             sims[simindex] = sims[simindex +1];
@@ -261,11 +273,15 @@ int main() {
     vector<int> fridge_fx{3,-1,-2,1,0,0};
     vector<int> toilet_fx{0,-1,3,0,0,0};
     vector<int> bed_fx{-1,-1,-1,3,-1,-1};
+        
+    tuple<float, float> fridge_xy(5,5);
+    tuple<float, float> toilet_xy(3,2);
+    tuple<float, float> bed_xy(4,1);
     
     // objects the sim can interact with and affect their needs
-    Object fridge("fridge", fridge_fx);
-    Object toilet("toilet", toilet_fx);
-    Object bed("bed", bed_fx);
+    Object fridge("fridge", fridge_fx, fridge_xy);
+    Object toilet("toilet", toilet_fx, toilet_xy);
+    Object bed("bed", bed_fx, bed_xy);
     
     // sims can interact with individual objects, which will affect their needs
     rachel.interactWith(fridge);
@@ -298,7 +314,8 @@ int main() {
         
     // adding a new object to the room
     vector<int> taco_fx{3,-1,-1,0,0,0};
-    Object taco("taco", taco_fx);
+    tuple<float, float> taco_xy(1,1);
+    Object taco("taco", taco_fx, taco_xy);
     kitchen.add_object(taco);
     rachel.interactWith(taco);
         
@@ -307,6 +324,11 @@ int main() {
         
     cout << rachel << endl;
     cout << rachelhouse << endl;
+    
+    rachel.closestObject();
+    cout << rachel << endl;
+    rachel.fufillNeeds();
+    cout << rachel << endl;
         
     return 0;
 }
@@ -389,6 +411,8 @@ void Sim::interactWith(Object& object){
                     needs[i] = newfx;
                 }
             }
+            coordinates = object.getCoordinates();
+            // changes coordinates to move to object
         }
         else{
             // if the object is in a different Room, attempt fails and we notify the user
@@ -411,14 +435,71 @@ void Sim::interactWith(Object& object){
                     needs[i] = newfx;
                 }
             }
+        coordinates = object.getCoordinates();
+        // changes coordinates to move to object
         }
-        else{
+        
+        
+        else {
             //if the object is not in the same room, attempt fails and we notify the user
             cout << "This object is not in the same room as " << name << endl;
         }
     }
 }
+void Sim::changeCoordinates(tuple<float, float>& xy){
+    // method that changes a sims coordinates in a room
+    coordinates = xy;
+    }
+        
+void Sim::closestObject(){
+    // method that finds the closest object to the sim
+    if (room != nullptr){
+        // call function that returns coordinates of each object in room;
+        Object* closestobject = room->closestToSim(coordinates, *this);
+        cout << "The closest object to " << name << " is " << closestobject->getName() << endl;
+        return;
+    }
+    cout << "This sim is not inside a room yet." << endl;
+}
+
+void Sim::fufillNeeds(){
+    // function that fills sims needs with objects in the room
+    if(room != nullptr){
+        // if the sim is inside a room, it will interact with all the objects in the room
+        cout << name << " will interact with all the objects in the room to fufill their needs." << endl;
+        room->interactwithObjects(*this);
+        }
+    
+}
   
+void Room::interactwithObjects(Sim& sim){
+    // sim inside the room interacts with all the objects
+    for(size_t i = 0; i < objects.size(); i++){
+        sim.interactWith(*objects[i]);
+        }
+    }
+
+Object* Room::closestToSim(tuple<float,float>& coordinates, Sim& sim){
+    float difference = 100.0;
+    float x_2 = get<0>(coordinates);
+    float y_2 = get<1>(coordinates);
+    Object* closest = nullptr;
+    // x and y coordinates for the sim, and object pointer for the closest object
+    for (size_t i = 0; i < objects.size(); i++){
+        float x_1 = get<0>(objects[i]->getCoordinates());
+        float y_1 = get<1>(objects[i]->getCoordinates());
+        // x and y coordinates for the object
+        float distance = sqrt( pow(x_2 - x_1, 2) + pow(y_2 - y_1, 2) );
+        // distance formula for the two x,y coordinates
+        if (distance < difference){
+            // if we find an object whos distance is closer to the sim, we reassign it, and set the closest to that object
+            difference = distance;
+            closest = objects[i];
+        }
+    }
+    // return closest Object*
+    return closest;
+}
 // method for placing a Sim in a Room
 void Room::placeSim(Sim& sim){
     //places sim in room, makes them interact w their environment
@@ -429,9 +510,11 @@ void Room::placeSim(Sim& sim){
             return;
         }
     }
-    // in any other case, the Sims house and room are changed and Sim is added to the Room
+    // in any other case, the Sims house and room are changed and Sim is added to the Room, at coordinate 0,0
     sim.current_house(house);
     sim.current_room(this);
+    tuple<float,float> newxy(0,0);
+    sim.changeCoordinates(newxy);
     sims.push_back(&sim);
             
 }
@@ -465,4 +548,5 @@ void Room::changeHouse(House* newhouse){
  > sims need to priortize where to go
  > initialize vector inside of making object
  > needs * multiplier (?)
+ > function in Sim that asks what object is it closest to, calls function in Object that returns coordinates in room
  */
