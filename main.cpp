@@ -2,6 +2,7 @@
 // some existing functions were changed (placeSim), and some were added to Room and Sim. Sims and objects now that coordinates, and the sim can see what object they are closest to, and interact with all the objects to fufill their needs
 // might change so that a sim can identify their lowest need and only replenish that
 
+<<<<<<< HEAD
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -263,6 +264,9 @@ private:
     vector<Sim*> sims;
     string name;
 };
+=======
+#include "includes/class_def.h"
+>>>>>>> a4bff50c34b9ff680ab7e1d4b67dfa15fbe11681
 
 int main() {
     // Sim object, Rachel
@@ -332,6 +336,7 @@ int main() {
         
     return 0;
 }
+<<<<<<< HEAD
         
 //helper function that places a Sim in a Room and can change their Room
 void Sim::current_room(Room* newroom){
@@ -518,16 +523,9 @@ void Room::placeSim(Sim& sim){
     sims.push_back(&sim);
             
 }
+=======
+>>>>>>> a4bff50c34b9ff680ab7e1d4b67dfa15fbe11681
 
-//helper function for changing a Room's house
-void Room::changeHouse(House* newhouse){
-    house = newhouse;
-    for (size_t i = 0; i < sims.size(); i++){
-        //for each Sim in the current Room, their House is changed
-        house->placeSim(*sims[i]);
-    }
-        //tell house vector to remove this room if not equal to prev house?
-}
 
 /*
  Next steps:
