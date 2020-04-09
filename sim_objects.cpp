@@ -112,7 +112,7 @@ void Sim::interactWith(Object& object){
 void Sim::changeCoordinates(tuple<float, float>& xy){
     // method that changes a sims coordinates in a room
     coordinates = xy;
-    }
+}
         
 void Sim::closestObject(){
     // method that finds the closest object to the sim
@@ -156,11 +156,26 @@ void Sim::atTarget(){
     if(get<0>(coordinates) != get<0>(target->getCoordinates()) || get<1>(coordinates) != get<1>(target->getCoordinates()) )
         return;
 
-    //if at the target - use it and remove the target
+    //if at the target - use it and remove the target and path
     interactWith(*target);
     target = nullptr;
+    navPath.clear();
     return;
 }
+
+//navigates to the next coordinate in the navigation path
+void Sim::goToNext(){
+    //if no target or path set - ignore
+    if(!hasTarget())    
+        return;
+    if(!hasNavPath())
+        return;
+
+    //pop off the next coordinate and go to it
+    changeCoordinates(navPath.front());
+    navPath.pop_front();
+}
+
 
 void Room::interactwithObjects(Sim& sim){
     // sim inside the room interacts with all the objects
