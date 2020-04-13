@@ -1,8 +1,10 @@
 //taken from main.cpp to be used in other classes
 #include <iostream>
 #include <vector>
+#include <list>
 #include <fstream>
 #include <string>
+#include <cmath>
 using namespace std;
 
 // class forward declarations
@@ -24,12 +26,13 @@ class Object {
     
 public:
     // Object constructor, initializes with name and vector of need effects, and two pointers that will point to the house and room they are in
-    Object(const string& name, vector<int>& effect) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false) {}
+    Object(const string& name, vector<int>& effect, tuple<float, float> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
     
     //getter for obtaining Object name
     const string& getName() const {return name;}
     const House* getHouse() const {return house;}
-    const tuple<float, float> getCoords() const{return coordinates;}
+    const Room* getRoom() const {return room;}
+    const tuple<float, float> getCoordinates() const{return coordinates;}
 
     // functions that change the color, cost and current room the object is in
     void changeColor(const string& newcolor) {color = newcolor;}
@@ -37,6 +40,7 @@ public:
     void changeRoom(Room* newroom) {room = newroom;
         hasRoom = true;
     }
+    void changeCoordinates(tuple<float, float> newcoords){coordinates = newcoords;}
     // function to obtain the effects the Object has on a Sim
     const int getNeedValue(int i) {return effect[i];}
     // bool to see if the object is in a room
@@ -51,7 +55,7 @@ private:
     House* house;
     Room* room;
     bool hasRoom;
-    tuple <float, float> coordinates;
+    tuple<float, float> coordinates;
     
 };
 
@@ -73,21 +77,31 @@ public:
             
     const string& getName() {return name;}                //getter for obtaining Sim name
    	vector<int> getNeeds(){return needs;}           //getter for obtaining Sim needs
-    House* getHouse(){return house;}
+   	House* getHouse(){return house;}
+    Room* getRoom(){return room;}
+    tuple <float, float> getCoordinates(){return coordinates;}
     
     //forward declarations of Sim methods
     void interactWith(Object& object);
     void current_room(Room* newroom);
     void current_house(House* newhouse);
 
+    void closestObject();
+    void changeCoordinates(tuple<float, float>& xy);
+    void fufillNeeds();
+
     //simulation functions
     bool isDead(){return needs[0] == 0 || needs[3] == 0;}   //check if the sim is dead (hunger = 0 or energy = 0)
     void alterNeed(int needIndex, int amt);             	//alters the value of a need by some amount
     
+    Object* getTarget(){return target;}
     bool hasTarget(){return target != nullptr;}		//check if target object is set
     void setTarget(Object* o){target = o;}				//sets the current target object
     void atTarget();									//checks if can interact with a target
     
+    bool hasNavPath(){return navPath.empty() || navPath.size() == 0;}	//check if a navigation path has been set
+    void setNavPath(list<tuple<float,float> > path){navPath = path;}		//set the navigation path for the sim
+    void goToNext();			//changes the coordinates of the SIM and removes the step from the path queue
     
 private:
     //needs: hunger, hygeine, bladder, energy, social, fun
@@ -97,7 +111,7 @@ private:
     Room* room;
     Object* target;
     tuple <float, float> coordinates;
-    
+    list<tuple<float,float>> navPath;
 };
 
 class Room{
@@ -111,20 +125,40 @@ class Room{
     };
 public:
     //Room constructor, initializes with a name, and a pointer to the house it is in
-    Room(const string& name) : name(name), house(nullptr) {}
+    Room(const string& name) : name(name), house(nullptr), dimensions(tuple<float, float>{10,10}) {}
+    Room(const string& name, const tuple<float, float>wh) : name(name), house(nullptr), dimensions(wh) {}
     
     // forward declarations of Room methods
     void changeHouse(House* newhouse);
     void placeSim(Sim& sim);
+    Object* closestToSim(tuple<float,float>& coordinates, Sim& sim);
+    void interactwithObjects(Sim& sim);
         
-    //getter for obtaining Room name
+    //getters
     const string& getName() {return name;}
+    vector<Object*> getObjects(){return objects;}
+    const tuple<float, float> getDimensions(){return dimensions;}
+
+
     // method that returns house pointer
     House* getHouse() {return house;}
     // method that adds objects to Room
     void add_object(Object& object){
         if (!objectInside(&object)){
             //if the object isnt already in the room, add it to the Rooms vector of Object*
+         
+        	//check if outside the boundary of the room
+        	tuple<float, float> c = object.getCoordinates();
+        	if(get<0>(c) >= get<0>(dimensions) || get<0>(c) < 0){		//x out of bounds
+        		cout << "** Warning ** : " << object.getName() << " X coordinate is out of bounds! Moving to edge of boundary" << endl;
+        		object.changeCoordinates(tuple<float,float>{(get<0>(c) < 0 ? 0 : get<0>(dimensions)-1),get<1>(c)});
+        	}
+        	if(get<1>(c) >= get<1>(dimensions) || get<1>(c) < 0){		//x out of bounds
+        		cout << "** Warning ** : " << object.getName() << " Y coordinate is out of bounds! Moving to edge of boundary" << endl;
+        		object.changeCoordinates(tuple<float,float>{get<0>(c),((get<1>(c) < 0) ? 0 : get<1>(dimensions)-1)});
+        	}
+
+        	//add the object
             objects.push_back(&object);
         }
         else{
@@ -167,7 +201,7 @@ private:
     vector<Object*> objects;
     vector<Sim*> sims;
     House* house;
-    
+    tuple<float, float> dimensions;
 };
 
 class House{

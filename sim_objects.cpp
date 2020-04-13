@@ -109,9 +109,40 @@ void Sim::interactWith(Object& object){
     }
 }
 
+void Sim::changeCoordinates(tuple<float, float>& xy){
+    // method that changes a sims coordinates in a room
+    coordinates = xy;
+}
+        
+void Sim::closestObject(){
+    // method that finds the closest object to the sim
+    if (room != nullptr){
+        // call function that returns coordinates of each object in room;
+        Object* closestobject = room->closestToSim(coordinates, *this);
+        cout << "The closest object to " << name << " is " << closestobject->getName() << endl;
+        return;
+    }
+    cout << "This sim is not inside a room yet." << endl;
+}
+
+void Sim::fufillNeeds(){
+    // function that fills sims needs with objects in the room
+    if(room != nullptr){
+        // if the sim is inside a room, it will interact with all the objects in the room
+        cout << name << " will interact with all the objects in the room to fufill their needs." << endl;
+        room->interactwithObjects(*this);
+        }
+    
+}
+
 //changes a certain need by some amount
 void Sim::alterNeed(int needIndex, int amt){
     needs[needIndex] += amt;
+
+    //cap need at 0
+    if(needs[needIndex] < 0)
+        needs[needIndex] = 0;
+
     return;
 }
   
@@ -122,15 +153,58 @@ void Sim::atTarget(){
         return;
 
     //if not at the target location - cancel
-    if(get<0>(coordinates) != get<0>(target->getCoords()) || get<1>(coordinates) != get<1>(target->getCoords()) )
+    if(get<0>(coordinates) != get<0>(target->getCoordinates()) || get<1>(coordinates) != get<1>(target->getCoordinates()) )
         return;
 
-    //if at the target - use it and remove the target
+    //if at the target - use it and remove the target and path
     interactWith(*target);
     target = nullptr;
+    navPath.clear();
     return;
 }
 
+//navigates to the next coordinate in the navigation path
+void Sim::goToNext(){
+    //if no target or path set - ignore
+    if(!hasTarget())    
+        return;
+    if(!hasNavPath())
+        return;
+
+    //pop off the next coordinate and go to it
+    changeCoordinates(navPath.front());
+    navPath.pop_front();
+}
+
+
+void Room::interactwithObjects(Sim& sim){
+    // sim inside the room interacts with all the objects
+    for(size_t i = 0; i < objects.size(); i++){
+        sim.interactWith(*objects[i]);
+        }
+    }
+
+Object* Room::closestToSim(tuple<float,float>& coordinates, Sim& sim){
+    float difference = 100.0;
+    float x_2 = get<0>(coordinates);
+    float y_2 = get<1>(coordinates);
+    Object* closest = nullptr;
+    // x and y coordinates for the sim, and object pointer for the closest object
+    for (size_t i = 0; i < objects.size(); i++){
+        float x_1 = get<0>(objects[i]->getCoordinates());
+        float y_1 = get<1>(objects[i]->getCoordinates());
+        // x and y coordinates for the object
+        float distance = sqrt( pow(x_2 - x_1, 2) + pow(y_2 - y_1, 2) );
+        // distance formula for the two x,y coordinates
+        if (distance < difference){
+            // if we find an object whos distance is closer to the sim, we reassign it, and set the closest to that object
+            difference = distance;
+            closest = objects[i];
+        }
+    }
+    // return closest Object*
+    return closest;
+}
 
 // method for placing a Sim in a Room
 void Room::placeSim(Sim& sim){
