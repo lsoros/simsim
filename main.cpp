@@ -2,7 +2,6 @@
 // some existing functions were changed (placeSim), and some were added to Room and Sim. Sims and objects now that coordinates, and the sim can see what object they are closest to, and interact with all the objects to fufill their needs
 // might change so that a sim can identify their lowest need and only replenish that
 
-<<<<<<< HEAD
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -27,7 +26,7 @@ class Object {
     
 public:
     // Object constructor, initializes with name and vector of need effects, and two pointers that will point to the house and room they are in
-    Object(const string& name, vector<int>& effect, tuple<float, float> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
+    Object(const string& name, vector<int>& effect, tuple<int, int> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
     
     //getter for obtaining Object name
     const string& getName() const {return name;}
@@ -78,7 +77,7 @@ public:
     void current_room(Room* newroom);
     void current_house(House* newhouse);
     void closestObject();
-    void changeCoordinates(tuple<float, float>& xy);
+    void changeCoordinates(tuple<int, int>& xy);
     void fufillNeeds();
     
 private:
@@ -87,7 +86,7 @@ private:
     vector<int> needs{5,5,5,5,5,5};
     House* house;
     Room* room;
-    tuple <float, float> coordinates;
+    tuple <int, int> coordinates;
     
 };
 
@@ -107,7 +106,7 @@ public:
     // forward declarations of Room methods
     void changeHouse(House* newhouse);
     void placeSim(Sim& sim);
-    Object* closestToSim(tuple<float,float>& coordinates, Sim& sim);
+    Object* closestToSim(tuple<int,int>& coordinates, Sim& sim);
     void interactwithObjects(Sim& sim);
     //getter for obtaining Room name
     const string& getName() {return name;}
@@ -264,9 +263,6 @@ private:
     vector<Sim*> sims;
     string name;
 };
-=======
-#include "includes/class_def.h"
->>>>>>> a4bff50c34b9ff680ab7e1d4b67dfa15fbe11681
 
 int main() {
     // Sim object, Rachel
@@ -278,9 +274,9 @@ int main() {
     vector<int> toilet_fx{0,-1,3,0,0,0};
     vector<int> bed_fx{-1,-1,-1,3,-1,-1};
         
-    tuple<float, float> fridge_xy(5,5);
-    tuple<float, float> toilet_xy(3,2);
-    tuple<float, float> bed_xy(4,1);
+    tuple<int, int> fridge_xy(5,5);
+    tuple<int, int> toilet_xy(3,2);
+    tuple<int, int> bed_xy(4,1);
     
     // objects the sim can interact with and affect their needs
     Object fridge("fridge", fridge_fx, fridge_xy);
@@ -318,7 +314,7 @@ int main() {
         
     // adding a new object to the room
     vector<int> taco_fx{3,-1,-1,0,0,0};
-    tuple<float, float> taco_xy(1,1);
+    tuple<int, int> taco_xy(1,1);
     Object taco("taco", taco_fx, taco_xy);
     kitchen.add_object(taco);
     rachel.interactWith(taco);
@@ -336,7 +332,6 @@ int main() {
         
     return 0;
 }
-<<<<<<< HEAD
         
 //helper function that places a Sim in a Room and can change their Room
 void Sim::current_room(Room* newroom){
@@ -451,7 +446,7 @@ void Sim::interactWith(Object& object){
         }
     }
 }
-void Sim::changeCoordinates(tuple<float, float>& xy){
+void Sim::changeCoordinates(tuple<int, int>& xy){
     // method that changes a sims coordinates in a room
     coordinates = xy;
     }
@@ -484,7 +479,7 @@ void Room::interactwithObjects(Sim& sim){
         }
     }
 
-Object* Room::closestToSim(tuple<float,float>& coordinates, Sim& sim){
+Object* Room::closestToSim(tuple<int,int>& coordinates, Sim& sim){
     float difference = 100.0;
     float x_2 = get<0>(coordinates);
     float y_2 = get<1>(coordinates);
@@ -518,13 +513,11 @@ void Room::placeSim(Sim& sim){
     // in any other case, the Sims house and room are changed and Sim is added to the Room, at coordinate 0,0
     sim.current_house(house);
     sim.current_room(this);
-    tuple<float,float> newxy(0,0);
+    tuple<int,int> newxy(0,0);
     sim.changeCoordinates(newxy);
     sims.push_back(&sim);
             
 }
-=======
->>>>>>> a4bff50c34b9ff680ab7e1d4b67dfa15fbe11681
 
 
 /*
