@@ -1,8 +1,6 @@
 // Fourth commit to program
 // some existing functions were changed (placeSim), and some were added to Room and Sim. Sims and objects now that coordinates, and the sim can see what object they are closest to, and interact with all the objects to fufill their needs
 // might change so that a sim can identify their lowest need and only replenish that
-<<<<<<< HEAD
-
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -27,21 +25,25 @@ class Object {
     
 public:
     // Object constructor, initializes with name and vector of need effects, and two pointers that will point to the house and room they are in
-    Object(const string& name, vector<int>& effect, tuple<int, int> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
+    Object(const string& name, vector<int>& effect, pair<int, int> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
     
     //getter for obtaining Object name
     const string& getName() const {return name;}
     // functions that change the color, cost and current room the object is in
-    void changeColor(const string& newcolor) {color = newcolor;}
-    void changeCost(const double& newcost) {cost = newcost;}
-    void changeRoom(Room* newroom) {room = newroom;
+    inline void changeColor(const string& newcolor) {color = newcolor;}
+    inline void changeCost(const double& newcost) {cost = newcost;}
+    inline void changeRoom(Room* newroom) {room = newroom;
         hasRoom = true;
     }
     // function to obtain the effects the Object has on a Sim
     const int getNeedValue(int i) {return effect[i];}
     // bool to see if the object is in a room
-    tuple<float, float> getCoordinates() {return coordinates;}
+    pair<float, float> getCoordinates() {return coordinates;}
     bool inRoom() {return hasRoom;}
+
+    inline void changeCoordinates(pair<float, float>& p) {
+        coordinates = p;
+    }
     
     
 private:
@@ -52,7 +54,7 @@ private:
     House* house;
     Room* room;
     bool hasRoom;
-    tuple<float, float> coordinates;
+    pair<float, float> coordinates;
     
 };
 
@@ -72,14 +74,14 @@ public:
     Sim(const string& name) : name(name), house(nullptr), room(nullptr) {}
         
     //getter for obtaining Sim name
-    const string& getName() {return name;}
+    inline const string& getName() {return name;}
     //forward declarations of Sim methods
-    void interactWith(Object& object);
-    void current_room(Room* newroom);
-    void current_house(House* newhouse);
-    void closestObject();
-    void changeCoordinates(tuple<int, int>& xy);
-    void fufillNeeds();
+    inline void interactWith(Object& object);
+    inline void current_room(Room* newroom);
+    inline void current_house(House* newhouse);
+    inline void closestObject();
+    inline void changeCoordinates(pair<int, int>& xy);
+    inline void fufillNeeds();
     
 private:
     //needs: hunger, hygeine, bladder, energy, social, fun
@@ -87,7 +89,7 @@ private:
     vector<int> needs{5,5,5,5,5,5};
     House* house;
     Room* room;
-    tuple <int, int> coordinates;
+    pair <int, int> coordinates;
     
 };
 
@@ -105,16 +107,16 @@ public:
     Room(const string& name) : name(name), house(nullptr) {}
     
     // forward declarations of Room methods
-    void changeHouse(House* newhouse);
-    void placeSim(Sim& sim);
-    Object* closestToSim(tuple<int,int>& coordinates, Sim& sim);
-    void interactwithObjects(Sim& sim);
+    inline void changeHouse(House* newhouse);
+    inline void placeSim(Sim& sim);
+    inline Object* closestToSim(pair<int,int>& coordinates, Sim& sim);
+    inline void interactwithObjects(Sim& sim);
     //getter for obtaining Room name
-    const string& getName() {return name;}
+    inline const string& getName() {return name;}
     // method that returns house pointer
-    House* getHouse() {return house;}
+    inline House* getHouse() {return house;}
     // method that adds objects to Room
-    void add_object(Object& object){
+    inline void add_object(Object& object){
         if (!objectInside(&object)){
             //if the object isnt already in the room, add it to the Rooms vector of Object*
             objects.push_back(&object);
@@ -124,7 +126,7 @@ public:
         }
     }
     // helper function that checks if an object is currently inside the room
-    bool objectInside(Object* object){
+    inline bool objectInside(Object* object){
         for (size_t i = 0; i < objects.size(); i++){
             if (objects[i] == object){
                 return true;
@@ -134,7 +136,7 @@ public:
     }
         
     //when a Sim changes rooms, it notifies the previous room it was in to remove itself from their vector of Sim*
-    void removeSim(Sim* sim){
+    inline void removeSim(Sim* sim){
         int simindex = 0;
         for (size_t i = 0; i < sims.size(); i++){
             if (sims[i] == sim){
@@ -153,6 +155,14 @@ public:
         }
         sims.pop_back();
     }
+
+    inline void mutate_objects();
+
+    inline Object* delete_object(int position);
+
+    inline bool place_object(Object& object, pair<float, float> coordinates);
+    inline bool check_object(pair<float, float> coordinates);
+
     
 private:
     string name;
@@ -180,13 +190,13 @@ class House{
     };
 public:
     // House constructor, initializes with a name
-    House(const string& name) : name(name) {}
+    inline House(const string& name) : name(name) {}
     
     // getter for obtaining House name
-    const string& getName() {return name;}
+    inline const string& getName() {return name;}
     
     // method that adds a room to House
-    void add_room(Room& room){
+    inline void add_room(Room& room){
        
         if (roomInside(&room)){
             //if room already exists in the house, user is notified
@@ -201,7 +211,7 @@ public:
     }
     
     // helper function that places Sim inside House
-    void placeSim(Sim& sim){
+    inline void placeSim(Sim& sim){
         //flag that tracks if a Sim is present
         bool simPresent = false;
         
@@ -223,7 +233,7 @@ public:
     }
     
     //helper function that checks if a Room is already inside the current House
-    bool roomInside(Room* room){
+    inline bool roomInside(Room* room){
 
         for(size_t i = 0; i < rooms.size(); i++){
             if (rooms[i] == room){
@@ -234,7 +244,7 @@ public:
     }
         
     //when a Sim changes rooms, it notifies the previous room it was in to remove itself from their vector of Sim*
-    void removeSim(Sim* sim){
+    inline void removeSim(Sim* sim){
         int simindex = 0;
         for (size_t i = 0; i < sims.size(); i++){
             if (sims[i] == sim){
@@ -246,7 +256,7 @@ public:
         /*
         if (simindex != sims.size()){
         //  if sim exists in room and needs to be removed, its coordinates are reset to be 0,0 for when they are placed. might not be necessary, since placeSim does this
-            tuple<float,float> newxy(0,0);
+            pair<float,float> newxy(0,0);
             sim->changeCoordinates(newxy);
         }
          */
@@ -264,9 +274,6 @@ private:
     vector<Sim*> sims;
     string name;
 };
-=======
-#include "includes/class_def.h"
->>>>>>> 0bcf771e69784d24937498ca25dec12efb783f31
 
 int main() {
     // Sim object, Rachel
@@ -278,9 +285,9 @@ int main() {
     vector<int> toilet_fx{0,-1,3,0,0,0};
     vector<int> bed_fx{-1,-1,-1,3,-1,-1};
         
-    tuple<int, int> fridge_xy(5,5);
-    tuple<int, int> toilet_xy(3,2);
-    tuple<int, int> bed_xy(4,1);
+    pair<int, int> fridge_xy(5,5);
+    pair<int, int> toilet_xy(3,2);
+    pair<int, int> bed_xy(4,1);
     
     // objects the sim can interact with and affect their needs
     Object fridge("fridge", fridge_fx, fridge_xy);
@@ -309,6 +316,7 @@ int main() {
     // if you try to double add a room to a house or double add a sim to a room, the action will fail
     rachelhouse.add_room(livingroom);
     livingroom.placeSim(rachel);
+    livingroom.mutate_objects();
     cout << endl;
         
     // when you place a sim in a different room in the house, it takes that sim out of the room it is currently in
@@ -318,7 +326,7 @@ int main() {
         
     // adding a new object to the room
     vector<int> taco_fx{3,-1,-1,0,0,0};
-    tuple<int, int> taco_xy(1,1);
+    pair<int, int> taco_xy(1,1);
     Object taco("taco", taco_fx, taco_xy);
     kitchen.add_object(taco);
     rachel.interactWith(taco);
@@ -336,10 +344,9 @@ int main() {
         
     return 0;
 }
-<<<<<<< HEAD
         
 //helper function that places a Sim in a Room and can change their Room
-void Sim::current_room(Room* newroom){
+inline void Sim::current_room(Room* newroom){
         
     if (house == nullptr){
         // if the Sim currently doesnt have a house, we enter this conditional statement
@@ -373,7 +380,7 @@ void Sim::current_room(Room* newroom){
 }
         
 //helper function that places a Sim in a House and can change their House
-void Sim::current_house(House* newhouse){
+inline void Sim::current_house(House* newhouse){
 
     if ((house != newhouse) && (house != nullptr)){
         //if the newhouse is not the same as the current House, and if the current house exists, we enter this conditional
@@ -399,7 +406,7 @@ void Sim::current_house(House* newhouse){
 }
         
 // method that makes a Sim interact with an Object
-void Sim::interactWith(Object& object){
+inline void Sim::interactWith(Object& object){
     //check if they have same room and house
     if (room == nullptr){
         //if Sim is not currently inside a Room, we enter this conditional statement
@@ -451,12 +458,12 @@ void Sim::interactWith(Object& object){
         }
     }
 }
-void Sim::changeCoordinates(tuple<int, int>& xy){
+inline void Sim::changeCoordinates(pair<int, int>& xy){
     // method that changes a sims coordinates in a room
     coordinates = xy;
     }
         
-void Sim::closestObject(){
+inline void Sim::closestObject(){
     // method that finds the closest object to the sim
     if (room != nullptr){
         // call function that returns coordinates of each object in room;
@@ -467,7 +474,7 @@ void Sim::closestObject(){
     cout << "This sim is not inside a room yet." << endl;
 }
 
-void Sim::fufillNeeds(){
+inline void Sim::fufillNeeds(){
     // function that fills sims needs with objects in the room
     if(room != nullptr){
         // if the sim is inside a room, it will interact with all the objects in the room
@@ -477,14 +484,14 @@ void Sim::fufillNeeds(){
     
 }
   
-void Room::interactwithObjects(Sim& sim){
+inline void Room::interactwithObjects(Sim& sim){
     // sim inside the room interacts with all the objects
     for(size_t i = 0; i < objects.size(); i++){
         sim.interactWith(*objects[i]);
         }
     }
 
-Object* Room::closestToSim(tuple<int,int>& coordinates, Sim& sim){
+Object* Room::closestToSim(pair<int,int>& coordinates, Sim& sim){
     float difference = 100.0;
     float x_2 = get<0>(coordinates);
     float y_2 = get<1>(coordinates);
@@ -506,7 +513,7 @@ Object* Room::closestToSim(tuple<int,int>& coordinates, Sim& sim){
     return closest;
 }
 // method for placing a Sim in a Room
-void Room::placeSim(Sim& sim){
+inline void Room::placeSim(Sim& sim){
     //places sim in room, makes them interact w their environment
     for(size_t i = 0; i < sims.size(); i++){
         if (sims[i] == &sim){
@@ -518,13 +525,73 @@ void Room::placeSim(Sim& sim){
     // in any other case, the Sims house and room are changed and Sim is added to the Room, at coordinate 0,0
     sim.current_house(house);
     sim.current_room(this);
-    tuple<int,int> newxy(0,0);
+    pair<int,int> newxy(0,0);
     sim.changeCoordinates(newxy);
     sims.push_back(&sim);
-            
+      
 }
-=======
->>>>>>> 0bcf771e69784d24937498ca25dec12efb783f31
+
+inline void Room::mutate_objects( )
+{
+
+    cout<<"Mutants here! : "<<endl;
+    cout<<"testing object deletion : "<<objects.size()<<endl;
+    // cout << get<1>(objects[0]->getCoordinates())<<endl;
+    // objects[0] = objects[1];
+    // cout << get<1>(objects[0]->getCoordinates())<<endl;
+
+    // Object* deleted_object = delete_object(0);
+    // cout<<objects.size()<<endl;
+    // cout<<*deleted_object<<endl;
+
+    vector<int> fridge_fx{3,-1,-2,1,0,0};
+        
+    pair<int, int> fridge_xy(5,5);
+
+    
+    // objects the sim can interact with and affect their needs
+    Object fridge_dummy("fridge_dummy", fridge_fx, fridge_xy);
+
+    place_object(fridge_dummy, fridge_xy);
+    cout<<*objects[objects.size()-1];
+
+
+}
+
+inline Object* Room::delete_object(int position)
+{
+    // pair<int,int> coordinates = objects[position]->getCoordinates();
+    Object * obj = objects[position];
+    objects.erase(objects.begin()+position);
+    return obj;
+
+}
+
+inline bool Room::place_object(Object& object, pair<float, float> coordinates)
+{
+    if(check_object(coordinates)) {
+        objects.push_back(&object);
+    }
+    else {
+        // check neighbours
+        int x[] = {0,1,0,-1};
+        int y[] = {1,0,-1,0};
+        for(int i=0;i<4;i++) {
+            if(check_object(make_pair(coordinates.first + x[i], coordinates.second + y[i])))  {
+                pair<float, float> pnew = {coordinates.first + x[i], coordinates.second + y[i]};
+                object.changeCoordinates(pnew);
+                objects.push_back(&object);
+            }
+        }
+    }
+    return true;
+}
+
+bool Room::check_object(pair<float, float> coordinates)
+{
+    for(auto obj:objects) if(obj->getCoordinates() == coordinates) return false;
+    return true;
+}
 
 
 /*
