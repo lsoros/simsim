@@ -336,8 +336,8 @@ int main() {
         
     cout << rachel << endl;
     cout << rachelhouse << endl;
-    
-    rachel.closestObject();
+    cout << "This is getting printed\n";
+    // rachel.closestObject();
     cout << rachel << endl;
     rachel.fufillNeeds();
     cout << rachel << endl;
@@ -465,6 +465,7 @@ inline void Sim::changeCoordinates(pair<int, int>& xy){
         
 inline void Sim::closestObject(){
     // method that finds the closest object to the sim
+    cout<<"It comes here inside too?\n";
     if (room != nullptr){
         // call function that returns coordinates of each object in room;
         Object* closestobject = room->closestToSim(coordinates, *this);
@@ -569,6 +570,7 @@ inline Object* Room::delete_object(int position)
 
 inline bool Room::place_object(Object& object, pair<float, float> coordinates)
 {
+    //graph search to find next position?
     if(check_object(coordinates)) {
         objects.push_back(&object);
     }
