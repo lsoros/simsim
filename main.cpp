@@ -591,6 +591,10 @@ inline bool Room::place_object(Object& object, pair<float, float> coordinates)
 
 bool Room::check_object(pair<float, float> coordinates)
 {
+    // Check if coordinates lie within the bounding box. If they don't return false. Else continue.
+    /*
+        if(coordinates.first < 0 || coordinates.first >=x_size || coordinates.second <0 || coordinates.second >=y_size) return false;
+     * /
     for(auto obj:objects) if(obj->getCoordinates() == coordinates) return false;
     return true;
 }
