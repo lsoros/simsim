@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <map>
+#include <algorithm>
 using namespace std;
 
 // class forward declarations
@@ -228,6 +230,7 @@ public:
     const string& getName() {return name;}
     const vector<Room*> getRooms(){return rooms;};
     
+    
     // method that adds a room to House
     void add_room(Room& room){
        
@@ -294,6 +297,20 @@ public:
         }
         sims.pop_back();
 
+    }
+
+    map<string, int> getObjectCt(){
+        int i;
+        map<string, int> objectMap;
+
+        for(i=0;i<rooms.size();i++){
+            vector<Object *>objs = rooms[i]->getObjects();
+            int v;
+            for(v=0;v<objs.size();v++){
+                objectMap[objs[v]->getName()]++;
+            }
+        }
+        return objectMap;
     }
         
 private:
