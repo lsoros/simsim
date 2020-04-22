@@ -109,7 +109,7 @@ void Sim::interactWith(Object& object){
     }
 }
 
-void Sim::changeCoordinates(tuple<float, float>& xy){
+void Sim::changeCoordinates(tuple<int,int>& xy){
     // method that changes a sims coordinates in a room
     coordinates = xy;
 }
@@ -184,7 +184,7 @@ void Room::interactwithObjects(Sim& sim){
         }
     }
 
-Object* Room::closestToSim(tuple<float,float>& coordinates, Sim& sim){
+Object* Room::closestToSim(tuple<int,int>& coordinates, Sim& sim){
     float difference = 100.0;
     float x_2 = get<0>(coordinates);
     float y_2 = get<1>(coordinates);

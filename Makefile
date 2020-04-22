@@ -15,5 +15,8 @@ simulation : simulation.cpp
 novelty : novelty.cpp
 	$(CC) $(CFLAGS) objDef.o novelty.cpp -o novelty
 
+simsim : simsim.cpp
+	$(CC) $(CFLAGS) objDef.o simsim.cpp -o simsim
+
 clean:
 	rm -f $(TARGET) *.o

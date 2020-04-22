@@ -12,19 +12,19 @@ float objDist(Sim *s, Object *o);
 float objDistManhattan(Sim *s, Object *o);
 
 
-list<tuple<float,float>> getBFSPath(tuple<float, float>start, tuple<float, float>end, tuple<float, float> boundary, list<tuple<float,float>>xs);
-list<Node *> getNeighbors(Node* n, tuple<float,float> bounds, list<tuple<float,float>> xs);
+list<tuple<int,int>> getBFSPath(tuple<int, int>start, tuple<int, int>end, tuple<int, int> boundary, list<tuple<int,int>>xs);
+list<Node *> getNeighbors(Node* n, tuple<int,int> bounds, list<tuple<int,int>> xs);
 bool visited(list<Node *> v, Node* n);
-bool inSet(list<tuple<float,float>>s, tuple<float,float>e);
+bool inSet(list<tuple<int,int>>s, tuple<int,int>e);
 
 //for use with the BFS algorithm
 class Node{
 	public:
 		string id;				//string = "x,y" for ease of access 
 		Node *parent;
-		tuple<float, float>xy;
+		tuple<int, int>xy;
 
-		Node(tuple<float,float> c, Node* par_node){
+		Node(tuple<int,int> c, Node* par_node){
 			xy = c;
 			id = to_string(get<0>(c)) + "," + to_string(get<1>(c));
 			parent = par_node;
@@ -62,14 +62,14 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 		if(simChar->hasTarget() && !simChar->hasNavPath()){
 			//get the room objects' coordinates
 			vector<Object *>roomObjs = simChar->getRoom()->getObjects();
-			list<tuple<float,float>> objCoords;
+			list<tuple<int,int>> objCoords;
 			int o;
 			for(o=0;o<roomObjs.size();o++){
 				objCoords.push_back(roomObjs[o]->getCoordinates());
 			}
 
 			//make the path
-			list<tuple<float,float>> bfs_path = getBFSPath(simChar->getCoordinates(), simChar->getTarget()->getCoordinates(), simChar->getRoom()->getDimensions(), objCoords);
+			list<tuple<int,int>> bfs_path = getBFSPath(simChar->getCoordinates(), simChar->getTarget()->getCoordinates(), simChar->getRoom()->getDimensions(), objCoords);
 			simChar->setNavPath(bfs_path);
 		}
 
@@ -137,7 +137,7 @@ float* multiSimulate(Sim** sims, int numSims, int maxTicks, vector<int> rate, in
 			if(simChar->hasTarget() && !simChar->hasNavPath()){
 				//get the room objects' coordinates
 				vector<Object *>roomObjs = simChar->getRoom()->getObjects();
-				vector<tuple<float,float>> objCoords;
+				vector<tuple<int,int>> objCoords;
 				int o;
 				for(o=0;o<roomObjs.size();o++){
 					objCoords.push_back(roomObjs[o]->getCoordinates());
@@ -266,14 +266,14 @@ void findNeedObj(Sim *s, int needIndex){
 
 //returns navigation queue from xy1 to xy2
 // Input: 
-//   tuple<float, float>start 				: starting point on the map
-//   tuple<float, float>end 				: ending target point on the map
-//   tuple<float, float>boundary 			: boundary of the map (w, h) starting from 0,0 in top left
-//   list<tuple<float,float>>xs			: blocked off points of the map (objects or walls)
+//   tuple<int, int>start 				: starting point on the map
+//   tuple<int, int>end 				: ending target point on the map
+//   tuple<int, int>boundary 			: boundary of the map (w, h) starting from 0,0 in top left
+//   list<tuple<int,int>>xs			: blocked off points of the map (objects or walls)
 
 // Output:
-//	 list<tuple<float,float>> outPath		: resulting path to take from start to end
-list<tuple<float,float>> getBFSPath(tuple<float, float>start, tuple<float, float>end, tuple<float, float> boundary, list<tuple<float,float>>xs){
+//	 list<tuple<int,int>> outPath		: resulting path to take from start to end
+list<tuple<int,int>> getBFSPath(tuple<int, int>start, tuple<int, int>end, tuple<int, int> boundary, list<tuple<int,int>>xs){
 	string startID = to_string(get<0>(start)) + "," + to_string(get<1>(start));
 	string endID = to_string(get<0>(end)) + "," + to_string(get<1>(end));
 
@@ -319,11 +319,11 @@ list<tuple<float,float>> getBFSPath(tuple<float, float>start, tuple<float, float
 
 	//no match - return empty handed
 	if(matchNode == nullptr)
-		return list<tuple<float,float>>();
+		return list<tuple<int,int>>();
 	
 
 	//trace it back to the source to get the path
-	list<tuple<float, float>> back_path;
+	list<tuple<int, int>> back_path;
 	while(matchNode != nullptr){
 		back_path.push_front(matchNode->xy);
 		matchNode = matchNode->parent;
@@ -334,7 +334,7 @@ list<tuple<float,float>> getBFSPath(tuple<float, float>start, tuple<float, float
 
 //gets the neighboring nodes (in 8 directions) of a given node
 //checks for boundary area and if an object is already occupying the space
-list<Node *> getNeighbors(Node* p, tuple<float,float> bounds, list<tuple<float,float>> xs){
+list<Node *> getNeighbors(Node* p, tuple<int,int> bounds, list<tuple<int,int>> xs){
 	list<Node *> neighbors;
 
 	float x = get<0>(p->xy);
@@ -343,40 +343,40 @@ list<Node *> getNeighbors(Node* p, tuple<float,float> bounds, list<tuple<float,f
 	float h = get<1>(bounds);
 	
 	//top
-	if(x-1 >= 0 && y-1 >= 0 && !inSet(xs, tuple<float,float>{x-1,y-1})){
-		Node n(tuple<float,float>{x-1,y-1}, p);
+	if(x-1 >= 0 && y-1 >= 0 && !inSet(xs, tuple<int,int>{x-1,y-1})){
+		Node n(tuple<int,int>{x-1,y-1}, p);
 		neighbors.push_back(&n);
 	}
-	if(y-1 >= 0  && !inSet(xs, tuple<float,float>{x,y-1})){
-		Node n(tuple<float,float>{x,y-1}, p);
+	if(y-1 >= 0  && !inSet(xs, tuple<int,int>{x,y-1})){
+		Node n(tuple<int,int>{x,y-1}, p);
 		neighbors.push_back(&n);
 	}
-	if(x+1 < w  && y-1 >= 0 && !inSet(xs, tuple<float,float>{x+1,y-1})){
-		Node n(tuple<float,float>{x+1,y-1}, p);
+	if(x+1 < w  && y-1 >= 0 && !inSet(xs, tuple<int,int>{x+1,y-1})){
+		Node n(tuple<int,int>{x+1,y-1}, p);
 		neighbors.push_back(&n);
 	}
 
 	//middle
-	if(x-1 >= 0 && !inSet(xs, tuple<float,float>{x-1,y})){
-		Node n(tuple<float,float>{x-1,y}, p);
+	if(x-1 >= 0 && !inSet(xs, tuple<int,int>{x-1,y})){
+		Node n(tuple<int,int>{x-1,y}, p);
 		neighbors.push_back(&n);
 	}
-	if(x+1 < w  && !inSet(xs, tuple<float,float>{x+1})){
-		Node n(tuple<float,float>{x+1,y-1}, p);
+	if(x+1 < w  && !inSet(xs, tuple<int,int>{x+1})){
+		Node n(tuple<int,int>{x+1,y-1}, p);
 		neighbors.push_back(&n);
 	}
 
 	//bottom
-	if(x-1 >= 0 && y+1 < h && !inSet(xs, tuple<float,float>{x-1,y+1})){
-		Node n(tuple<float,float>{x-1,y+1}, p);
+	if(x-1 >= 0 && y+1 < h && !inSet(xs, tuple<int,int>{x-1,y+1})){
+		Node n(tuple<int,int>{x-1,y+1}, p);
 		neighbors.push_back(&n);
 	}
-	if(y+1 < h  && !inSet(xs, tuple<float,float>{x,y+1})){
-		Node n(tuple<float,float>{x,y+1}, p);
+	if(y+1 < h  && !inSet(xs, tuple<int,int>{x,y+1})){
+		Node n(tuple<int,int>{x,y+1}, p);
 		neighbors.push_back(&n);
 	}
-	if(x+1 < w && y+1 < h  && !inSet(xs, tuple<float,float>{x+1,y+1})){
-		Node n(tuple<float,float>{x+1,y+1}, p);
+	if(x+1 < w && y+1 < h  && !inSet(xs, tuple<int,int>{x+1,y+1})){
+		Node n(tuple<int,int>{x+1,y+1}, p);
 		neighbors.push_back(&n);
 	}
 
@@ -395,8 +395,8 @@ bool visited(list<Node *> v, Node* n){
 }
 
 //check if coordinates is in a set of coordinates
-bool inSet(list<tuple<float,float>>s, tuple<float,float>e){
-	list<tuple<float,float>>::iterator i;
+bool inSet(list<tuple<int,int>>s, tuple<int,int>e){
+	list<tuple<int,int>>::iterator i;
 	for(i=s.begin();i != s.end();i++){
 		if(get<0>(*i) == get<0>(e) && get<1>(*i) == get<1>(e))
 			return true;
