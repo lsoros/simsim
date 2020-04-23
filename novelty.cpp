@@ -1,14 +1,6 @@
-#include "includes/class_def.h"
+#include "includes/simsim_func.h"
 
 //based on instructions from http://eplex.cs.ucf.edu/noveltysearch/userspage/
-
-const float MINIMUM_SIM_FITNESS_CRITERIA = 0.25;
-const float MINIMUM_NOVEL_DISTANCE = 2.0;
-const int K_VALUE = 5;
-
-//define functions early
-float euclidDist(map<string, int> a, map<string, int>b);
-float avg_knn_dist(list<House*> neighbors, House* noob, int k);
 
 
 bool isNovel(list<House *> novelSet, House* h, float simFitness){
@@ -95,4 +87,4 @@ float avg_knn_dist(list<House*> neighbors, House* noob, int k){
 }
 
 
-int main(){return 0;}
+//int main(){return 0;}

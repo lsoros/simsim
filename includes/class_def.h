@@ -234,12 +234,14 @@ class House{
     };
 public:
     // House constructor, initializes with a name
-    House(const string& name) : name(name) {}
+    House(const string& name) : name(name), fitness(0.0 ) {}
     
     // getters
     const string& getName() {return name;}
     const vector<Room*> getRooms(){return rooms;};
+    const float getFitness(){return fitness;}
     
+    void setFitness(float f){fitness = f;}
     
     // method that adds a room to House
     void add_room(Room& room){
@@ -356,4 +358,5 @@ private:
     vector<Room*> rooms;
     vector<Sim*> sims;
     string name;
+    float fitness;
 };

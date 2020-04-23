@@ -1,4 +1,4 @@
-#include "includes/class_def.h"
+#include "includes/simsim_func.h"
 
 ///////////////////////////////////
 //   MAIN LOOP EXPERIMENT CODE   //
@@ -14,6 +14,11 @@ int main(){		//feel like some kind of arguments should go here; maybe file input
 	float _mut_move_prob = 0.4;
 
 	int curGen = 0;
+
+	int _maxticks = 100;
+	//needs order: hunger, hygeine, bladder, energy, social, fun
+	vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
 
 //1. initial seed generation code 
 	/* WRITE INIT CODE HERE */
@@ -49,6 +54,20 @@ int main(){		//feel like some kind of arguments should go here; maybe file input
 
 //3. While curGen < generations
 	while(curGen < _generations){
+
+		//3.5 i'm assuming the simulation would go somewhere here followed by novelty assignment
+		list<House *>::iterator h;
+		for(h=population.begin();h != population.end();h++){
+			House *popHouse = (*h);
+			Sim testSim("Chell");		//make a new sim everytime to reset needs
+
+			float fitness = simulate(&testSim, _maxticks, decNeedRate, 30, needsRanking);
+
+			bool foundNovelHouse = isNovel(novelHouses, popHouse, fitness);
+			if(foundNovelHouse)
+				addToNoveltySet(novelHouses, popHouse);
+		}
+
 		//a. create an empty list for the next generation's population
 		list<House *> newPop;			
 
@@ -57,20 +76,17 @@ int main(){		//feel like some kind of arguments should go here; maybe file input
 		// (shuffles the list then pick the first n elements)
 		int parentNum = round(_popsize/6);
 
-		list<House *>pseudoPop(population);		//copy for safety
+		vector<House *>pseudoPop(population.begin(), population.end());		//copy for safety
 		random_shuffle(pseudoPop.begin(), pseudoPop.end());
 
-		list<House *>pseudoNovel(novelHouses);	//copy archive likewise
+		vector<House *>pseudoNovel(novelHouses.begin(), population.end());	//copy archive likewise
 		random_shuffle(pseudoNovel.begin(), pseudoNovel.end());
 
 		list<House *>parentSet;					//add both to the parent set
 		int p;
 		for(p=0;p<parentNum;p++){
-			House *popHouse = pseudoPop.front();
-			pseudoPop.pop_front();	
-
-			House *novHouse = pseudoNovel.front();
-			pseudoNovel.pop_front();
+			House *popHouse = pseudoPop[p];
+			House *novHouse = pseudoNovel[p];
 
 			parentSet.push_back(popHouse);
 			parentSet.push_back(novHouse);
@@ -83,13 +99,13 @@ int main(){		//feel like some kind of arguments should go here; maybe file input
 		for (int i = 0; i < _popsize; ++i){
 			//pop off
 			House *curHouse = parentSet.front();
-			curHouse.pop_front();
+			parentSet.pop_front();
 
 			int m;
 			for(m=0;m<3;m++){
 				//copy
 				House noobHouse(curHouse->getName());
-				curHouse.copyHouse(&noobHouse);
+				curHouse->copyHouse(&noobHouse);
 
 				//mutate
 				int r;
@@ -105,7 +121,7 @@ int main(){		//feel like some kind of arguments should go here; maybe file input
 
 
 		//e. replace old population (garbage collection should delete it)
-		population = newPop
+		population = newPop;
 
 		//f. iterate otherwise press F to pay respects to your machine
 		curGen++;						

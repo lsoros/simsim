@@ -1,21 +1,8 @@
 //simulation for the SIM living in a build house
 //code by Milk
-#include "includes/class_def.h"
+#include "includes/simsim_func.h"
 
 
-class Node;
-
-float calculateFitness(Sim* s);
-void findNeedObj(Sim *s, int needIndex);
-//void findNeedObj(House* house, int needIndex);
-float objDist(Sim *s, Object *o);
-float objDistManhattan(Sim *s, Object *o);
-
-
-list<tuple<int,int>> getBFSPath(tuple<int, int>start, tuple<int, int>end, tuple<int, int> boundary, list<tuple<int,int>>xs);
-list<Node *> getNeighbors(Node* n, tuple<int,int> bounds, list<tuple<int,int>> xs);
-bool visited(list<Node *> v, Node* n);
-bool inSet(list<tuple<int,int>>s, tuple<int,int>e);
 
 //for use with the BFS algorithm
 class Node{
@@ -429,7 +416,7 @@ float objDistManhattan(Sim *s, Object *o){
 
 
 
-int main(){return 0;}
+//int main(){return 0;}
 
 
 
