@@ -1,7 +1,7 @@
 CC = c++
 CFLAGS = -std=c++11 -stdlib=libc++ -g -Wall -O
 
-all : objDef.o simulation.o novelty.o main simsim
+all : objDef.o simulation.o novelty.o simsim
 
 objDef.o : sim_objects.cpp
 	$(CC) $(CFLAGS) -c sim_objects.cpp -o objDef.o

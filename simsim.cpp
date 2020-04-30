@@ -78,7 +78,7 @@ void simulateTest(){
 
 
 	Sim sim("Foo Bar");
-    Room livingroom("Test Room");
+    Room livingroom("Test Room", {5,5});
     House testHouse("Some House");
     testHouse.add_room(livingroom);
     livingroom.placeSim(sim);
@@ -100,9 +100,9 @@ void simulateTest(){
 
     //simulate
     vector<int> decNeedRate{5,10,5,7,15,15};
-	vector<int> needsRanking{2,0,3,1,4,5};
+	vector<int> needsRanking{0,2,3,1,4,5};
 	int _maxticks = 100;
-    float fitness = simulate(&sim, _maxticks, decNeedRate, 30, needsRanking);
+    float fitness = simulate(&sim, _maxticks, decNeedRate, 3, needsRanking);
 
     cout << "House Fitness: " << fitness << endl;
 }
@@ -128,9 +128,11 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 	///////    PARAMETERS  //////
 	int _popsize = 30;
 	int _generations = 10;
+	/*
 	float _mut_add_prob = 0.3;
 	float _mut_delete_prob = 0.1;
 	float _mut_move_prob = 0.4;
+	*/
 
 	int curGen = 0;
 
@@ -251,6 +253,7 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 
 	/* ASCII (or something) REPRESENTATION TEXT GOES HERE */
 
+	return 1;
 }
 
 

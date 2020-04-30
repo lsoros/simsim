@@ -16,8 +16,12 @@ class Room;
 class Object;
 class Sim;
 
+//global functions
 map<string, vector<int>> getfullObjList();  //retrieves the object list in the format [name, fx]
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
+string tup2str(tuple<int,int>t);
+
+//////////////////     CLASS DEFINITIONS     ///////////////////
 
 
 class Object {
@@ -107,9 +111,9 @@ public:
     Object* getTarget(){return target;}
     bool hasTarget(){return target != nullptr;}		//check if target object is set
     void setTarget(Object* o){target = o;}				//sets the current target object
-    void atTarget();									//checks if can interact with a target
+    void atTarget(bool debug);									//checks if can interact with a target
     
-    bool hasNavPath(){return navPath.empty() || navPath.size() == 0;}	//check if a navigation path has been set
+    bool hasNavPath(){return !navPath.empty() || navPath.size() > 0;}	//check if a navigation path has been set
     void setNavPath(list<tuple<int,int> > path){navPath = path;}		//set the navigation path for the sim
     void goToNext();			//changes the coordinates of the SIM and removes the step from the path queue
     

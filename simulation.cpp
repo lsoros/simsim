@@ -2,21 +2,34 @@
 //code by Milk
 #include "includes/simsim_func.h"
 
-
+bool debug = true;
+bool debug2 = false;
 
 //for use with the BFS algorithm
 class Node{
+	friend ostream& operator<<(ostream& os, const Node& n){
+        // output operator for Node class
+        os << "[" << n.id << "]  <-  ";
+        if(n.parentId != "")
+      		os << "[" << n.parentId << "]" << endl;
+        else
+        	os << "null" << endl;
+
+        return os;
+    };
+
 	public:
 		string id;				//string = "x,y" for ease of access 
-		Node *parent;
+		string parentId;
 		tuple<int, int>xy;
 
-		Node(tuple<int,int> c, Node* par_node){
+		Node(tuple<int,int> c, string p){
 			xy = c;
-			id = to_string(get<0>(c)) + "," + to_string(get<1>(c));
-			parent = par_node;
+			id = tup2str(c);
+			parentId = p;
 		}
 };
+
 
 
 
@@ -45,9 +58,10 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 		if(simChar->isDead())		//miss keisha? Miss Keeisshaaa? MISS KEISHA! 
 			break;
 
-		/*
+		
 		//1. set the target path if not already set
 		if(simChar->hasTarget() && !simChar->hasNavPath()){
+
 			//get the room objects' coordinates
 			vector<Object *>roomObjs = simChar->getRoom()->getObjects();
 			list<tuple<int,int>> objCoords;
@@ -56,18 +70,41 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 				objCoords.push_back(roomObjs[o]->getCoordinates());
 			}
 
+			if(debug){
+				list<tuple<int,int>>::iterator i;
+				cout << "OBJS: ";
+				for(i=objCoords.begin();i!=objCoords.end();++i){
+					cout << "[" << get<0>(*i) << "," << get<1>(*i) << "]  ";
+				}
+				cout << endl;
+			}
+			
+			
+
 			//make the path
 			list<tuple<int,int>> bfs_path = getBFSPath(simChar->getCoordinates(), simChar->getTarget()->getCoordinates(), simChar->getRoom()->getDimensions(), objCoords);
+			
+			if(debug){
+				list<tuple<int,int>>::iterator i;
+				cout << "BFS PATH: ";
+				for(i=bfs_path.begin();i!=bfs_path.end();++i){
+					cout << "[" << get<0>(*i) << "," << get<1>(*i) << "]  ";
+				}
+				cout << endl;
+			}
+
 			simChar->setNavPath(bfs_path);
+
+			
 		}
 
 		//1.2 go to the target
 		simChar->goToNext();
 
-		//2. check if at the target object (if has one) - and use the object if so
-		simChar->atTarget();
 
-		*/
+		//2. check if at the target object (if has one) - and use the object if so
+		simChar->atTarget(debug);
+
 
 		//3. apply the needs decrement
 		int n;
@@ -79,16 +116,16 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 				simChar->alterNeed(n, -1);
 		}
 
-		cout << tick << ": ";
-		simChar->printNeeds();
-
+		if(debug){
+			cout << tick << ": ";
+			simChar->printNeeds();
+		}
 		
-
 		//4. if the target has been set - ignore other needs until it is fulfilled
 		if(simChar->hasTarget())
 			continue;
 
-		//4. find next need to fulfill
+		//5. find next need to fulfill
 		for(n=0;n<needsRanking.size();n++){
 			int needIndex = needsRanking[n];
 			vector<int> simNeeds = simChar->getNeeds();
@@ -97,11 +134,14 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 			}
 		}
 		
-		cout << "Target: ";
-		if(simChar->hasTarget())
-			cout << simChar->getTarget()->getName() << endl;
-		else
-			cout << "(none)" << endl;
+		if(debug){
+			cout << "    Target: ";
+			if(simChar->hasTarget())
+				cout << simChar->getTarget()->getName() << endl;
+			else
+				cout << "(none)" << endl;
+		}
+		
 		
 	}
 
@@ -236,13 +276,6 @@ void findNeedObj(Sim *s, int needIndex){
 		}
 	}
 
-	//1.2 find object within house - if none in the current room
-	/* coming soon
-
-	if()
-
-	*/
-
 	//if no good object found - return
 	if(beneficialObjs.size() == 0)
 		return;
@@ -275,122 +308,208 @@ void findNeedObj(Sim *s, int needIndex){
 // Output:
 //	 list<tuple<int,int>> outPath		: resulting path to take from start to end
 list<tuple<int,int>> getBFSPath(tuple<int, int>start, tuple<int, int>end, tuple<int, int> boundary, list<tuple<int,int>>xs){
-	string startID = to_string(get<0>(start)) + "," + to_string(get<1>(start));
-	string endID = to_string(get<0>(end)) + "," + to_string(get<1>(end));
+	string startID = tup2str(start);
+	string endID = tup2str(end);
 
-	//intialize queue
-	list<Node *>queue;
-	list<Node *>visitedList;
-	Node initnode(start, nullptr);
-	queue.push_front(&initnode);
-	visitedList.push_front(&initnode);
+	//intialize lists and map
+	list<Node>queue;
+	list<Node>visitedList;
+	map<string, tuple<int,int>>famTree;		//key: child, value: parent
+
+	Node initnode(start, "");
+	queue.push_front(initnode);
+	visitedList.push_front(initnode);
 
 	//solution node
-	Node *matchNode;
+	string matchNodeId = "";
 
 	//search the entire map
 	while(queue.size() > 0){
-		Node *curNode = queue.front();
+		Node curNode = queue.front();
 		queue.pop_front();
 
-		//check the neighbors for unfound points 
-		list<Node *> neighbors = getNeighbors(curNode,boundary, xs);
-		
-		list<Node *>::iterator n;
-		for(n=neighbors.begin();n != neighbors.end();n++){
-			Node *node = *n;
+		if(debug2){
+			cout << "CUR: " << (curNode);
+		}
 
-			//found the point!
-			if(node->id == endID){
-				matchNode = node;
-				break;
+		visitedList.push_front(Node(curNode.xy, curNode.parentId));
+
+		//check the neighbors for unfound points 
+		list<Node> neighbors;
+		getNeighbors(&curNode,boundary, neighbors);
+		
+		list<Node>::iterator n;
+		for(n=neighbors.begin();n != neighbors.end();++n){
+			Node node = (*n);
+
+			//add to branching tree if not already added
+			if(famTree.count(node.id) == 0)
+				famTree.insert(pair<string,tuple<int,int>>(node.id, curNode.xy));
+
+			//if not already visited - add to the queue and the family tree
+			if(!visited(visitedList, &node) && !visited(queue, &node) && !inSet(xs, node.xy)){
+				queue.push_back(Node(node.xy, node.parentId));
+				if(debug2){
+					cout << "     " << (node) << endl;
+				}
 			}
 
-			//if not already visited - add to the queue
-			if(!visited(visitedList, node)){
-				queue.push_front(node);
-				visitedList.push_front(node);
+
+			//found the point! seems dumb to save to a string...
+			if(node.id == endID){
+				matchNodeId = node.id;
+				break;
 			}
 		}
 
+		if(debug2){
+			list<Node>::iterator v;
+			cout << "VISITED: " << endl; 
+			for(v=visitedList.begin();v != visitedList.end();v++){
+				cout << (v)->id << " ";
+			}
+			cout << endl;
+
+			list<Node>::iterator t;
+			cout << "QUEUE: " << endl;
+			for(t=queue.begin();t != queue.end();t++){
+				cout << (t)->id << " ";
+			}
+			cout << "\n" << endl;
+		}
+
+		
+
+
 		//found a match
-		if(matchNode != nullptr)
+		if(matchNodeId != "")
 			break;
 	}
 
 	//no match - return empty handed
-	if(matchNode == nullptr)
+	if(matchNodeId == "")
 		return list<tuple<int,int>>();
-	
+
+
+
+	if(debug2){
+		map<string, tuple<int,int>>::iterator m;
+		for(m=famTree.begin();m!=famTree.end();m++){
+			cout << m->first << " -> " << tup2str(m->second) << endl;
+		}
+	}
 
 	//trace it back to the source to get the path
 	list<tuple<int, int>> back_path;
-	while(matchNode != nullptr){
-		back_path.push_front(matchNode->xy);
-		matchNode = matchNode->parent;
+	back_path.push_front(end);
+
+	while(matchNodeId != startID){
+		tuple<int,int> p = famTree[matchNodeId];
+		back_path.push_front(p);
+		matchNodeId = tup2str(p);
 	}
+	
 
 	return back_path;
 }
 
 //gets the neighboring nodes (in 8 directions) of a given node
 //checks for boundary area and if an object is already occupying the space
-list<Node *> getNeighbors(Node* p, tuple<int,int> bounds, list<tuple<int,int>> xs){
-	list<Node *> neighbors;
+void getNeighbors(Node* p, tuple<int,int> bounds, list<Node>& neighbors){
 
-	float x = get<0>(p->xy);
-	float y = get<1>(p->xy);
-	float w = get<0>(bounds);
-	float h = get<1>(bounds);
+	int x = get<0>(p->xy);
+	int y = get<1>(p->xy);
+	int w = get<0>(bounds);
+	int h = get<1>(bounds);
+
+	//cout << x << "," << y << " " << w << "x" << h << endl;
 	
 	//top
-	if(x-1 >= 0 && y-1 >= 0 && !inSet(xs, tuple<int,int>{x-1,y-1})){
-		Node n(tuple<int,int>{x-1,y-1}, p);
+	/*
+	if(x-1 >= 0 && y-1 >= 0 && !inSet(xs, {x-1,y-1})){
+		Node n({x-1,y-1}, p);
 		neighbors.push_back(&n);
 	}
-	if(y-1 >= 0  && !inSet(xs, tuple<int,int>{x,y-1})){
-		Node n(tuple<int,int>{x,y-1}, p);
+	*/
+	if(((y-1) >= 0)){
+		int nx = x;
+		int ny = y-1;
+
+		//cout << "new xy: [" << nx << "," << ny << "]" << endl;
+
+		Node n({nx,ny}, p->id);
+		neighbors.push_back(n);
+		// Node n({x,y-1}, p);
+		// neighbors.push_back(&n);
+	}
+	/*
+	if(x+1 < w  && y-1 >= 0 && !inSet(xs, {x+1,y-1})){
+		Node n({x+1,y-1}, p);
 		neighbors.push_back(&n);
 	}
-	if(x+1 < w  && y-1 >= 0 && !inSet(xs, tuple<int,int>{x+1,y-1})){
-		Node n(tuple<int,int>{x+1,y-1}, p);
-		neighbors.push_back(&n);
-	}
+	*/
 
 	//middle
-	if(x-1 >= 0 && !inSet(xs, tuple<int,int>{x-1,y})){
-		Node n(tuple<int,int>{x-1,y}, p);
-		neighbors.push_back(&n);
+	if(((x-1) >= 0)){
+		int nx = x-1;
+		int ny = y;
+
+		//cout << "new xy: [" << nx << "," << ny << "]" << endl;
+
+		Node n({nx,ny}, p->id);
+		neighbors.push_back(n);
+
+		// Node n({x-1,y}, p);
+		// neighbors.push_back(&n);
 	}
-	if(x+1 < w  && !inSet(xs, tuple<int,int>{x+1})){
-		Node n(tuple<int,int>{x+1,y-1}, p);
-		neighbors.push_back(&n);
+	if(((x+1) < w)){
+		int nx = x+1;
+		int ny = y;
+
+		//cout << "new xy: [" << nx << "," << ny << "]" << endl;
+
+		Node n({nx,ny}, p->id);
+		neighbors.push_back(n);
+
+		// Node n({x+1,y-1}, p);
+		// neighbors.push_back(&n);
 	}
 
+	/*
 	//bottom
-	if(x-1 >= 0 && y+1 < h && !inSet(xs, tuple<int,int>{x-1,y+1})){
-		Node n(tuple<int,int>{x-1,y+1}, p);
+	if((x-1 >= 0) && y+1 < h && !inSet(xs, {x-1,y+1})){
+		Node n({x-1,y+1}, p);
 		neighbors.push_back(&n);
 	}
-	if(y+1 < h  && !inSet(xs, tuple<int,int>{x,y+1})){
-		Node n(tuple<int,int>{x,y+1}, p);
-		neighbors.push_back(&n);
-	}
-	if(x+1 < w && y+1 < h  && !inSet(xs, tuple<int,int>{x+1,y+1})){
-		Node n(tuple<int,int>{x+1,y+1}, p);
-		neighbors.push_back(&n);
-	}
+	*/
+	if(((y+1) < h)){
+		int nx = x;
+		int ny = y+1;
 
-	return neighbors;
+		//cout << "new xy: [" << nx << "," << ny << "]" << endl;
+
+		//cout << "*** " << x << "," << (y+1) << endl;
+		Node n({nx,ny}, p->id);
+		neighbors.push_back(n);
+	}
+	/*
+	if((x+1 < w) && y+1 < h  && !inSet(xs, {x+1,y+1})){
+		Node n({x+1,y+1}, p);
+		neighbors.push_back(&n);
+	}
+	*/
 
 }
 
 //returns if a node has already been visited or not
-bool visited(list<Node *> v, Node* n){
-	list<Node *>::iterator i;
+bool visited(list<Node> v, Node* n){
+	list<Node>::iterator i;
 	for(i=v.begin();i != v.end();i++){
-		if(n->id == (*i)->id)
+		//cout << n->id << " vs. " << i->id << endl;
+		if(n->id.compare(i->id) == 0){
+			//cout << "MATCH!" << endl;
 			return true;
+		}
 	}
 	return false;
 }

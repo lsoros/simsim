@@ -8,8 +8,8 @@ void findNeedObj(Sim *s, int needIndex);
 float objDist(Sim *s, Object *o);
 float objDistManhattan(Sim *s, Object *o);
 list<tuple<int,int>> getBFSPath(tuple<int, int>start, tuple<int, int>end, tuple<int, int> boundary, list<tuple<int,int>>xs);
-list<Node *> getNeighbors(Node* n, tuple<int,int> bounds, list<tuple<int,int>> xs);
-bool visited(list<Node *> v, Node* n);
+void getNeighbors(Node* n, tuple<int,int> bounds, list<Node>& neighbors);
+bool visited(list<Node> v, Node* n);
 bool inSet(list<tuple<int,int>>s, tuple<int,int>e);
 
 float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vector<int> needsRanking);

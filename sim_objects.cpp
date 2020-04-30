@@ -1,6 +1,10 @@
 //class function definitions moved from main.cpp
 #include "includes/class_def.h"
 
+string tup2str(tuple<int,int>t){
+    return to_string(get<0>(t)) + "," + to_string(get<1>(t));
+}
+
 //helper function that places a Sim in a Room and can change their Room
 void Sim::current_room(Room* newroom){
         
@@ -157,17 +161,22 @@ void Sim::alterNeed(int needIndex, int amt){
 }
   
 //checks if the sim is at the target location and uses it if so
-void Sim::atTarget(){
+void Sim::atTarget(bool debug){
      //if no target set - don't even bother
-    if(!hasTarget())       
+    if(!hasTarget()){
         return;
+    }       
 
     //if not at the target location - cancel
-    if(get<0>(coordinates) != get<0>(target->getCoordinates()) || get<1>(coordinates) != get<1>(target->getCoordinates()) )
+    if(get<0>(coordinates) != get<0>(target->getCoordinates()) || get<1>(coordinates) != get<1>(target->getCoordinates()) ){
+        if(debug)
+            cout << "    (navigating to target) - S: " << tup2str(getCoordinates()) << "  T: " << tup2str(target->getCoordinates()) << endl;
         return;
+    }
 
     //if at the target - use it and remove the target and path
     interactWith(*target);
+    //cout << "    INTERACTED WITH TARGET!" << endl;
     target = nullptr;
     navPath.clear();
     return;
