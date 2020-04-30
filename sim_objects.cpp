@@ -135,6 +135,16 @@ void Sim::fufillNeeds(){
     
 }
 
+void Sim::printNeeds(){
+    int i;
+    for(i=0;i<needs.size();i++){
+        cout << needs[i];
+        if(i < needs.size()-1)
+            cout << " ";
+    }
+    cout << endl;
+}
+
 //changes a certain need by some amount
 void Sim::alterNeed(int needIndex, int amt){
     needs[needIndex] += amt;
@@ -236,37 +246,36 @@ void Room::changeHouse(House* newhouse){
 map<string, vector<int>> getfullObjList(){
     map<string, vector<int>> objList;
 
-
     std::ifstream file("simObjectList.txt");
     string fileLine;
     string delim = ",";
     while (getline(file, fileLine)){
-        //parse the line
-        size_t pos = 0;
-        int index = 0;
-        string token;
 
+        //set up variables to save
         string name = "";
         vector<int> fx;
 
-        while((pos = fileLine.find(delim)) != string::npos){
-            token = fileLine.substr(0,pos);
+        //split the line and save to a vector
+        vector<string> parts;
+        stringstream s_stream(fileLine);
+        while(s_stream.good()){
+            string data;
+            getline(s_stream, data, ',');   //get the next part
+            parts.push_back(data);
+        }
 
-            //copy name
-            if(index == 0){
-                int i;
-                for(i=0;i<token.size();i++){
-                    name += token[i];
-                }
-            }
-            //copy the vector values
+        //assign the parts accordingly
+        int i;
+        for(i=0;i<parts.size();i++){
+            if(i == 0)
+                name = parts[i];
             else{
                 int nv;
-                stringstream(token) >> nv;
+                stringstream(parts[i]) >> nv;
                 fx.push_back(nv);
             }
-            index++;
         }
+
 
         objList.insert(pair<string,vector<int>>(name, fx));
     }
@@ -289,14 +298,16 @@ map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
         for(i=0;i<name.length();i++){
             char c = name.at(i);
 
-            //character was already used, pick the next one
-            if(curUsedChars.find_first_of(c) != string::npos){
-                continue;
-            }
-            //new character can be saved, add to the map and pending list
-            else{
+            //use lowercase
+            if(curUsedChars.find_first_of(c) == string::npos){
                 amap.insert(pair<string,char>(name, c));
                 curUsedChars += c;
+                break;
+            }
+            //use uppercase
+            else if(curUsedChars.find_first_of(toupper(c)) == string::npos){
+                amap.insert(pair<string,char>(name, toupper(c)));
+                curUsedChars += toupper(c);
                 break;
             }
         }

@@ -19,4 +19,4 @@ simsim : simsim.cpp
 	$(CC) $(CFLAGS) objDef.o simulation.o novelty.o simsim.cpp -o simsim
 
 clean:
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) *.o simsim main

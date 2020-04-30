@@ -17,7 +17,7 @@ class Object;
 class Sim;
 
 map<string, vector<int>> getfullObjList();  //retrieves the object list in the format [name, fx]
-map<string, char> makeObjAsciiMap();        //ascii representation for the object list in the form [name, ascii_rep]
+map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
 
 
 class Object {
@@ -98,6 +98,7 @@ public:
     void closestObject();
     void changeCoordinates(tuple<int, int>& xy);
     void fufillNeeds();
+    void printNeeds();
 
     //simulation functions
     bool isDead(){return needs[0] == 0 || needs[3] == 0;}   //check if the sim is dead (hunger = 0 or energy = 0)
@@ -361,8 +362,7 @@ public:
 
 
     //prints the house in ascii format
-    string asciiRep(){
-        map<string, char> nameRep = makeObjAsciiMap();
+    string asciiRep(map<string, char> nameRep){
        
         //do for one room for now
         tuple<int,int> dim = this->getRooms()[0]->getDimensions();
@@ -379,14 +379,10 @@ public:
 
         for(r=0;r<w;r++){
             for(c=0;c<h;c++){
-                //add wall
-                if(r == 0 || c == 0 || r == w-1 || c == h-1){
-                    houseRep += wall;
-                }
-                //add empty space
-                else{
-                    houseRep += empty;
-                }
+
+                //all empty space first
+                houseRep += empty;
+                
             }
         }
 
@@ -416,16 +412,37 @@ public:
         //add finishing format touches
         string houseRepFinal = "";
         int a;
-        for(a=0;a<houseRep.length();a++){
+        //top wall
+        for(a=0;a<(w+2);++a){
+            houseRepFinal += wall;
+        }
+        houseRepFinal += "\n";
+
+        for(a=0;a<houseRep.length();++a){
+            //add side wall
+            if(a % (w) == 0){
+                houseRepFinal += wall;
+            }
+
             houseRepFinal += houseRep[a];
 
-            //add new line at the edge
+            //add side wall and new line
             if((a+1) % w == 0){
+                houseRepFinal += wall;
                 houseRepFinal += "\n";
             }
         }
+
+        //bottom wall
+        for(a=0;a<(w+2);++a){
+            houseRepFinal += wall;
+        }
+        houseRepFinal += "\n";
+
+
         //add a key for good measure
         houseRepFinal += "\n\nKey\n";
+        houseRepFinal += "@ : SIM\n";
         for(o=0;o<objs.size();o++){
             Object *obj = objs[o];
             string name = obj->getName();

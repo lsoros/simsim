@@ -45,6 +45,7 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 		if(simChar->isDead())		//miss keisha? Miss Keeisshaaa? MISS KEISHA! 
 			break;
 
+		/*
 		//1. set the target path if not already set
 		if(simChar->hasTarget() && !simChar->hasNavPath()){
 			//get the room objects' coordinates
@@ -66,15 +67,22 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 		//2. check if at the target object (if has one) - and use the object if so
 		simChar->atTarget();
 
+		*/
+
 		//3. apply the needs decrement
 		int n;
 		for(n=0;n<rate.size();n++){
 			if(tick == 0)				//skip the first iteration
 				break;
 
-			if(rate[n] % tick == 0)		//if the rate matches - decrement a need
+			if((tick+1) % rate[n] == 0)		//if the rate matches - decrement a need
 				simChar->alterNeed(n, -1);
 		}
+
+		cout << tick << ": ";
+		simChar->printNeeds();
+
+		
 
 		//4. if the target has been set - ignore other needs until it is fulfilled
 		if(simChar->hasTarget())
@@ -88,6 +96,12 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 				findNeedObj(simChar, needIndex);
 			}
 		}
+		
+		cout << "Target: ";
+		if(simChar->hasTarget())
+			cout << simChar->getTarget()->getName() << endl;
+		else
+			cout << "(none)" << endl;
 		
 	}
 

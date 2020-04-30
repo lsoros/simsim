@@ -4,7 +4,126 @@
 //   MAIN LOOP EXPERIMENT CODE   //
 ///////////////////////////////////
 
-int main(){		//feel like some kind of arguments should go here; maybe file input?
+
+void printNeeds(vector<int> needs){
+	int i;
+	for(i=0;i<needs.size();i++){
+		cout << needs[i];
+		if(i < needs.size()-1)
+			cout << " ";
+	}
+}
+
+void showObjList(){
+	cout << "Getting object list...\n";
+	map<string, vector<int>> fullObjList = getfullObjList();
+
+	cout << "Making ascii character map...\n";
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	map<string, vector<int>>::iterator f;
+	for(f=fullObjList.begin();f!=fullObjList.end();++f){
+		cout << f->first << ": [";
+		printNeeds(f->second);
+		cout << "]\n";
+	}
+
+	 map<string, char>::iterator c;
+	 for(c=charMap.begin();c!=charMap.end();++c){
+	 	cout << c->first << " : " << c->second << "\n";
+	 }
+}
+
+void showTestRoom(){
+
+	//cout << "Getting object list...\n";
+	map<string, vector<int>> fullObjList = getfullObjList();
+
+	//cout << "Making ascii character map...\n";
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+
+	Sim sim("Foo Bar");
+    Room livingroom("Test Room");
+    House testHouse("Some House");
+    testHouse.add_room(livingroom);
+    livingroom.placeSim(sim);
+    
+    //needs order: hunger, hygeine, bladder, energy, social, fun
+    
+   	// objects the sim can interact with and affect their needs
+    Object fridge("fridge", fullObjList["fridge"], {6,5});
+    Object toilet("toilet", fullObjList["toilet"], {9,8});
+    Object bed("bed", fullObjList["bed"], {2,0});
+
+    livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+    //print the house
+    cout << testHouse.asciiRep(charMap) << endl;
+    
+}
+
+tuple<int,int> randPos(tuple<int,int>dimen){
+	return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
+}
+
+void simulateTest(){
+	//cout << "Getting object list...\n";
+	map<string, vector<int>> fullObjList = getfullObjList();
+
+	//cout << "Making ascii character map...\n";
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+
+	Sim sim("Foo Bar");
+    Room livingroom("Test Room");
+    House testHouse("Some House");
+    testHouse.add_room(livingroom);
+    livingroom.placeSim(sim);
+    
+    //needs order: hunger, hygeine, bladder, energy, social, fun
+    
+   	// objects the sim can interact with and affect their needs
+
+    Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(livingroom.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(livingroom.getDimensions()));
+
+    livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+    //print the house
+    cout << testHouse.asciiRep(charMap) << endl;
+
+    //simulate
+    vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
+	int _maxticks = 100;
+    float fitness = simulate(&sim, _maxticks, decNeedRate, 30, needsRanking);
+
+    cout << "House Fitness: " << fitness << endl;
+}
+
+int main(){
+	srand((unsigned) time(0));
+	//showObjList();
+	//showTestRoom();
+	simulateTest();
+
+	return 1;
+}
+
+
+
+
+
+
+
+
+int runExp(){		//feel like some kind of arguments should go here; maybe file input?
 
 	///////    PARAMETERS  //////
 	int _popsize = 30;
