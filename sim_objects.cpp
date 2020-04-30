@@ -232,3 +232,97 @@ void Room::changeHouse(House* newhouse){
     }
         //tell house vector to remove this room if not equal to prev house?
 }
+
+map<string, vector<int>> getfullObjList(){
+    map<string, vector<int>> objList;
+
+
+    std::ifstream file("simObjectList.txt");
+    string fileLine;
+    string delim = ",";
+    while (getline(file, fileLine)){
+        //parse the line
+        size_t pos = 0;
+        int index = 0;
+        string token;
+
+        string name = "";
+        vector<int> fx;
+
+        while((pos = fileLine.find(delim)) != string::npos){
+            token = fileLine.substr(0,pos);
+
+            //copy name
+            if(index == 0){
+                int i;
+                for(i=0;i<token.size();i++){
+                    name += token[i];
+                }
+            }
+            //copy the vector values
+            else{
+                int nv;
+                stringstream(token) >> nv;
+                fx.push_back(nv);
+            }
+            index++;
+        }
+
+        objList.insert(pair<string,vector<int>>(name, fx));
+    }
+
+    return objList;
+}
+
+map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
+    map<string, char> amap;
+    string curUsedChars = "";
+    string extraChar = "1234567890!$%*+=[]{}:;?></|";
+
+    map<string, vector<int>>::iterator o;
+    //assign a character representation for each object
+    for(o=fullObjList.begin();o != fullObjList.end();o++){
+        string name = o->first;
+        int i;
+
+        //use the name as the basis for the character representation
+        for(i=0;i<name.length();i++){
+            char c = name.at(i);
+
+            //character was already used, pick the next one
+            if(curUsedChars.find_first_of(c) != string::npos){
+                continue;
+            }
+            //new character can be saved, add to the map and pending list
+            else{
+                amap.insert(pair<string,char>(name, c));
+                curUsedChars += c;
+                break;
+            }
+        }
+
+
+        //no assignment yet, use defaults
+        if(amap.count(name) == 0){
+            int i;
+            for(i=0;i<extraChar.length();i++){
+                char c = extraChar.at(i);
+
+                //character was already used, pick the next one
+                if(curUsedChars.find_first_of(c) != string::npos){
+                    continue;
+                }
+                //new character can be saved, add to the map and pending list
+                else{
+                    amap.insert(pair<string,char>(name, c));
+                    curUsedChars += c;
+                    break;
+                }
+            }
+        }
+    }
+
+    return amap;
+}
+
+

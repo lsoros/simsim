@@ -1,0 +1,70 @@
+tv, 0,-1,0,0,0,3
+phone, 0,0,0,0,3,2
+bed, -1,-1,-1,3,-1,-1
+couch, 0,0,0,1,0,0
+desk, 0,0,0,0,0,1
+chair, 0,0,0,0,0,0
+lamp, 0,0,0,0,0,0
+dresser, 0,0,0,0,0,0
+laptop, 0,0,0,-1,0,5
+music stereo, 0,0,0,0,0,3
+bookcase, 0,0,0,0,0,2
+painting, 0,0,0,0,0,0
+treadmill, 0,-3,0,-5,0,2
+chess table, 0,0,0,0,2,2
+fireplace, 0,0,0,0,0,1
+stove, 4,0,0,0,0,1
+coffee maker, 2,0,-3,3,0,0
+fridge, 5,0,-1,0,0,1
+sink, 0,2,0,0,0,0
+trashcan, 0,-1,0,0,0,0
+toilet, 0,0,5,0,0,0
+bathtub, 0,5,0,0,0,1
+shower, 0,5,0,0,0,0
+mirror, 0,0,0,0,0,0
+hamper, 0,0,0,0,0,0
+washing machine, 0,0,0,0,0,0
+dryer, 0,0,0,0,0,0
+alarm clock, 0,0,0,0,0,-1
+night stand, 0,0,0,0,0,0
+video game console, 0,0,0,-1,2,5
+coffee table, 0,0,0,0,0,0
+buffet table, 3,0,-1,0,0,1
+guitar, 0,0,0,0,1,4
+piano, 0,0,0,0,2,3
+easel, 0,0,0,0,0,3
+plant, 0,0,0,0,0,0
+foosball table, 0,0,0,0,3,5
+fish bowl, 0,0,0,0,0,1
+telescope, 0,0,0,0,0,2
+crib, 0,0,0,5,0,0
+doll house, 0,0,0,0,0,1
+teddy bear, 0,0,0,0,1,1
+grill, 3,0,0,0,0,1
+newspaper, 0,0,0,0,0,0
+bicycle, 0,0,0,-1,0,3
+drumset, 0,0,0,0,0,1
+camera, 0,0,0,0,0,2
+cellphone, 0,0,0,0,3,2
+microwave, 4,0,0,0,0,0
+tissue box, 0,1,0,0,0,0
+makeup box, 0,0,0,0,0,0
+magazine, 0,0,0,0,0,0
+candle, 0,0,0,0,0,0
+high chair, 0,0,0,0,0,0
+book, 0,0,0,0,0,2
+hot tub, 0,1,0,0,0,3
+megaphone, 0,0,0,0,0,0
+arcade game, 0,0,0,0,0,4
+photo booth, 0,0,0,0,2,4
+pool table, 0,0,0,0,2,4
+table tennis, 0,0,0,0,3,5
+backpack, 0,0,0,0,0,0
+vending machine, 3,0,0,0,0,0
+karaoke machine, 0,0,0,0,3,5
+smoke detector, 0,0,0,0,0,0
+dartboard, 0,0,0,0,2,2
+food bowl, 0,0,0,0,0,0
+incense, 0,0,0,0,0,1
+_clock, 0,0,0,0,0,0
+calculator, 0,0,0,0,0,0

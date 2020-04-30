@@ -1,8 +1,9 @@
 //taken from main.cpp to be used in other classes
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <list>
-#include <fstream>
+#include <sstream>
 #include <string>
 #include <cmath>
 #include <map>
@@ -14,6 +15,9 @@ class House;
 class Room;
 class Object;
 class Sim;
+
+map<string, vector<int>> getfullObjList();  //retrieves the object list in the format [name, fx]
+map<string, char> makeObjAsciiMap();        //ascii representation for the object list in the form [name, ascii_rep]
 
 
 class Object {
@@ -143,6 +147,7 @@ public:
     const string& getName() {return name;}
     vector<Object*> getObjects(){return objects;}
     const tuple<int, int> getDimensions(){return dimensions;}
+    vector<Sim*> getSims(){return sims;}
 
 
 
@@ -353,6 +358,89 @@ public:
             newHouse->add_room(newRoom);
         }
     }
+
+
+    //prints the house in ascii format
+    string asciiRep(){
+        map<string, char> nameRep = makeObjAsciiMap();
+       
+        //do for one room for now
+        tuple<int,int> dim = this->getRooms()[0]->getDimensions();
+        int w = get<0>(dim);
+        int h = get<1>(dim);
+
+        //make an empty house first
+        string houseRep = "";
+        int r;
+        int c;
+
+        char wall = '#';
+        char empty = '.';
+
+        for(r=0;r<w;r++){
+            for(c=0;c<h;c++){
+                //add wall
+                if(r == 0 || c == 0 || r == w-1 || c == h-1){
+                    houseRep += wall;
+                }
+                //add empty space
+                else{
+                    houseRep += empty;
+                }
+            }
+        }
+
+        //map the objects
+        vector<Object *> objs = this->getRooms()[0]->getObjects(); //only one room for now so just use that 
+        int o;
+        for(o=0;o<objs.size();o++){
+            tuple<int,int>pos = objs[o]->getCoordinates();
+            string name = objs[o]->getName();
+            int index = get<0>(pos) + w*get<1>(pos);
+            houseRep[index] = nameRep[name];
+        }
+
+            
+        //add the sims
+        char sim = '@';
+        vector<Sim *> sims = this->getRooms()[0]->getSims();
+        int s;
+        for(s=0;s<sims.size();s++){
+            Sim *curSim = sims[s];
+            tuple<int,int>pos = curSim->getCoordinates();
+            int index = get<0>(pos) + w*get<1>(pos);
+            houseRep[index] = sim;
+        }
+
+
+        //add finishing format touches
+        string houseRepFinal = "";
+        int a;
+        for(a=0;a<houseRep.length();a++){
+            houseRepFinal += houseRep[a];
+
+            //add new line at the edge
+            if((a+1) % w == 0){
+                houseRepFinal += "\n";
+            }
+        }
+        //add a key for good measure
+        houseRepFinal += "\n\nKey\n";
+        for(o=0;o<objs.size();o++){
+            Object *obj = objs[o];
+            string name = obj->getName();
+
+            //[ascii_char] : [object_name]
+            houseRepFinal += nameRep[name];
+            houseRepFinal += " : ";
+            houseRepFinal += name;
+            houseRepFinal += "\n";
+        }
+
+        return houseRepFinal;
+    }
+
+    
         
 private:
     vector<Room*> rooms;
@@ -360,3 +448,9 @@ private:
     string name;
     float fitness;
 };
+
+
+
+
+
+
