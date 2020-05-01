@@ -18,12 +18,11 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 
 ////// NOVELTY.CPP CODE ////////
 const float MINIMUM_SIM_FITNESS_CRITERIA = 0.25;
-const float MINIMUM_NOVEL_DISTANCE = 2.0;
-const int K_VALUE = 5;
+const float MINIMUM_NOVEL_DISTANCE = 3.0;
+const int K_VALUE = 10;
 
 float euclidDist(map<string, int> a, map<string, int>b);
 float avg_knn_dist(list<House*> neighbors, House* noob, int k);
 bool sortAsc(const pair<House *, float> &a, const pair<House *, float> &b);
 
 bool isNovel(list<House *> novelSet, House* h, float simFitness);
-void addToNoveltySet(list<House *>& novelSet, House* h);

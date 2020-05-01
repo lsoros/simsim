@@ -1,9 +1,24 @@
 #include "includes/simsim_func.h"
 
 //based on instructions from http://eplex.cs.ucf.edu/noveltysearch/userspage/
-
+void printHouseMap(map<House *, float> v){
+	map<House *, float>::iterator i;
+	for(i=v.begin();i!=v.end();++i){
+		cout << i->first->getName() << ": " << i->second << endl;
+	}
+}
+void printHouseVec(vector<pair<House *, float>> v){
+	int i;
+	for(i=0;i<v.size();i++){
+		cout << v[i].first->getName() << ": " << v[i].second << endl;
+	}
+}
 
 bool isNovel(list<House *> novelSet, House* h, float simFitness){
+	//if nothing in the novel set, then it's the novel-est!
+	if(novelSet.size() == 0)
+		return true;
+
 	//check minimum criteria
 	if(simFitness < MINIMUM_SIM_FITNESS_CRITERIA){	//did not pass
 		return false;
@@ -14,10 +29,6 @@ bool isNovel(list<House *> novelSet, House* h, float simFitness){
 		return true;
 	else
 		return false;
-}
-
-void addToNoveltySet(list<House *>& novelSet, House* h){
-	novelSet.push_back(h);
 }
 
 bool sortAsc(const pair<House *, float> &a, const pair<House *, float> &b){return (a.second < b.second); }
@@ -60,6 +71,12 @@ float avg_knn_dist(list<House*> neighbors, House* noob, int k){
 		neighborDist.insert(pair<House *, float>((*n), euclidDist(noob->getObjectCt(), (*n)->getObjectCt())));
 	}
 
+	if(SHOW_DEBUG){
+		cout << "--Original--" << endl;
+		printHouseMap(neighborDist);
+	}
+	
+
 /// sort in ascending order ///
 	vector<pair<House *, float>> kvec;
 
@@ -71,6 +88,11 @@ float avg_knn_dist(list<House*> neighbors, House* noob, int k){
 
 	//sort the vector
 	sort(kvec.begin(), kvec.end(), sortAsc); 
+
+	if(SHOW_DEBUG){
+		cout << "--Sorted--" << endl;
+		printHouseVec(kvec);
+	}
 
 	/// average the first k distances ///
 	float d_sum = 0;
@@ -85,6 +107,7 @@ float avg_knn_dist(list<House*> neighbors, House* noob, int k){
 	return d_sum/k;
 
 }
+
 
 
 //int main(){return 0;}

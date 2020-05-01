@@ -1,8 +1,67 @@
 //class function definitions moved from main.cpp
 #include "includes/class_def.h"
 
+bool  SHOW_DEBUG = false;
+
 string tup2str(tuple<int,int>t){
     return to_string(get<0>(t)) + "," + to_string(get<1>(t));
+}
+string vec2str(vector<int>v){
+    int i;
+    string str = "";
+    for(i=0;i<v.size();i++){
+        str += v[i];
+        if(i+1 != v.size())
+            str += ",";
+    }
+    return str;
+}
+
+//copy constructors
+Object::Object(const Object& o){
+    name = o.getName();
+    int f;
+    for(f=0;f<6;f++){
+        effect.push_back(o.getNeedValue(f));
+    }
+    coordinates = {get<0>(o.getCoordinates()),get<1>(o.getCoordinates())};
+
+    //house and room will most likely be different - so set this manually later (within Room copy function)
+    house = nullptr;
+    room = nullptr;
+    hasRoom = false;
+}
+
+Room::Room(const Room& r){
+    name = r.getName();
+    dimensions = r.getDimensions();
+
+    //house will most likely be reset later
+    house = nullptr;
+
+    //duplicate any objects in the room
+    vector<Object*> rObjs = r.getObjects();
+    int o;
+    for(o=0;o<rObjs.size();o++){
+        Object *no = new Object(*(rObjs[o]));
+        add_object(*no);
+    }
+
+}
+
+House::House(const House& h){
+    name = h.getName();
+    fitness = getFitness();     //assuming everything's the same from the original room
+
+    //add the rooms
+    vector<Room *> hRooms = h.getRooms();
+    int r;
+    for(r=0;r<hRooms.size();r++){
+        Room *nr = new Room(*(hRooms[0]));
+        add_room(*nr);
+    }
+
+    //assume no sim in this house yet so don't copy it from the original house
 }
 
 //helper function that places a Sim in a Room and can change their Room
@@ -10,7 +69,8 @@ void Sim::current_room(Room* newroom){
         
     if (house == nullptr){
         // if the Sim currently doesnt have a house, we enter this conditional statement
-        cout << name << " has been placed in the " << newroom->getName() << endl;
+        if(SHOW_DEBUG)
+            cout << name << " has been placed in the " << newroom->getName() << endl;
         if (room != nullptr){
             // if they were in a previous before, remove the Sim from the previous room
             room->removeSim(this);
@@ -23,7 +83,8 @@ void Sim::current_room(Room* newroom){
         // if the Sim was previously in a different house, we enter this conditional statement
         if (house->roomInside(newroom)){
             // if the Room exists inside the House the Sim is currently inside, they can change rooms
-            cout << name << " has been placed in the " << newroom->getName() << endl;
+            if(SHOW_DEBUG)
+                cout << name << " has been placed in the " << newroom->getName() << endl;
             if (room != nullptr){
                 // if they were in a previous before, remove the Sim from the previous room
                 room->removeSim(this);
@@ -33,7 +94,8 @@ void Sim::current_room(Room* newroom){
         }
         else{
         // if the Room does not exist inside the House the Sim is currently in, the attempt fails. You can only switch to rooms that are in the same House
-            cout << "The " << newroom->getName() << " is not in the same house!" << endl;
+            if(SHOW_DEBUG)
+                cout << "The " << newroom->getName() << " is not in the same house!" << endl;
         }
     }
     
@@ -51,7 +113,8 @@ void Sim::current_house(House* newhouse){
         house = newhouse;
         if (house != nullptr){
             //notifies the user what House the Sim is in
-            cout << name << " is currently in " << house->getName() << endl;
+            if(SHOW_DEBUG)
+                cout << name << " is currently in " << house->getName() << endl;
         }
     }
     else if((house != newhouse) && (house == nullptr)){
@@ -59,7 +122,8 @@ void Sim::current_house(House* newhouse){
         // Sim's current House is assigned to newhouse
         house = newhouse;
         //notifies the user what House the Sim is in
-        cout << name << " is currently in " << house->getName() << endl;
+        if(SHOW_DEBUG)
+            cout << name << " is currently in " << house->getName() << endl;
     }
     // for any other case, reassign house to newhouse
     house = newhouse;
@@ -72,7 +136,8 @@ void Sim::interactWith(Object& object){
         //if Sim is not currently inside a Room, we enter this conditional statement
         if(!object.inRoom()){
             //if the object does not have a Room either, the two can interact
-            cout << name << " interacts with " << object.getName() << endl;
+            if(SHOW_DEBUG)
+                cout << name << " interacts with " << object.getName() << endl;
             for (size_t i = 0; i < needs.size(); i++){
                 int newfx = needs[i] + object.getNeedValue(i);
                 if (newfx > 10){
@@ -86,7 +151,8 @@ void Sim::interactWith(Object& object){
         }
         else{
             // if the object is in a different Room, attempt fails and we notify the user
-            cout << "This object is in a different room." << endl;
+            if(SHOW_DEBUG)
+                cout << "This object is in a different room." << endl;
         }
     }
         
@@ -94,7 +160,8 @@ void Sim::interactWith(Object& object){
         // if the Sim is already in a Room, we enter this conditional statement
         if (room->objectInside(&object)){
             //if the object is inside the same room as the Sim, they can interact
-            cout << name << " interacts with " << object.getName() << " in the " << room->getName() << endl;
+            if(SHOW_DEBUG)
+                cout << name << " interacts with " << object.getName() << " in the " << room->getName() << endl;
             for (size_t i = 0; i < needs.size(); i++){
                 int newfx = needs[i] + object.getNeedValue(i);
                 if (newfx > 10){
@@ -108,7 +175,8 @@ void Sim::interactWith(Object& object){
         }
         else{
             //if the object is not in the same room, attempt fails and we notify the user
-            cout << "This object is not in the same room as " << name << endl;
+            if(SHOW_DEBUG)
+                cout << "This object is not in the same room as " << name << endl;
         }
     }
 }
@@ -123,17 +191,20 @@ void Sim::closestObject(){
     if (room != nullptr){
         // call function that returns coordinates of each object in room;
         Object* closestobject = room->closestToSim(coordinates, *this);
-        cout << "The closest object to " << name << " is " << closestobject->getName() << endl;
+        if(SHOW_DEBUG)
+            cout << "The closest object to " << name << " is " << closestobject->getName() << endl;
         return;
     }
-    cout << "This sim is not inside a room yet." << endl;
+    if(SHOW_DEBUG)
+        cout << "This sim is not inside a room yet." << endl;
 }
 
 void Sim::fufillNeeds(){
     // function that fills sims needs with objects in the room
     if(room != nullptr){
         // if the sim is inside a room, it will interact with all the objects in the room
-        cout << name << " will interact with all the objects in the room to fufill their needs." << endl;
+        if(SHOW_DEBUG)
+            cout << name << " will interact with all the objects in the room to fufill their needs." << endl;
         room->interactwithObjects(*this);
         }
     
@@ -231,7 +302,8 @@ void Room::placeSim(Sim& sim){
     for(size_t i = 0; i < sims.size(); i++){
         if (sims[i] == &sim){
             // if Sim is already inside the Room, attempt fails and the user is notified
-            cout << sim.getName() << " is already inside the " << name << "!" << endl;
+            if(SHOW_DEBUG)
+                cout << sim.getName() << " is already inside the " << name << "!" << endl;
             return;
         }
     }
@@ -295,7 +367,7 @@ map<string, vector<int>> getfullObjList(){
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
     map<string, char> amap;
     string curUsedChars = "";
-    string extraChar = "1234567890!$%*+=[]{}:;?></|";
+    string extraChar = "1234567890!$%*+=[]{}:;?></|_\"\'^&()";
 
     map<string, vector<int>>::iterator o;
     //assign a character representation for each object

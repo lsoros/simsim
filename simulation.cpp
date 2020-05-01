@@ -2,7 +2,7 @@
 //code by Milk
 #include "includes/simsim_func.h"
 
-bool debug = true;
+bool debug = false;
 bool debug2 = false;
 
 //for use with the BFS algorithm

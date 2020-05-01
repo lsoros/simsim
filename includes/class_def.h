@@ -10,6 +10,9 @@
 #include <algorithm>
 using namespace std;
 
+extern bool SHOW_DEBUG;
+
+
 // class forward declarations
 class House;
 class Room;
@@ -20,29 +23,46 @@ class Sim;
 map<string, vector<int>> getfullObjList();  //retrieves the object list in the format [name, fx]
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
 string tup2str(tuple<int,int>t);
+string vec2str(vector<int>v);
 
 //////////////////     CLASS DEFINITIONS     ///////////////////
 
 
 class Object {
     friend ostream& operator<<(ostream& os, const Object& theObject){
+        os << theObject.getName() << " @ (" << tup2str(theObject.getCoordinates()) << ") = [";
+
+        for(size_t i = 0; i < 6; i++){
+            os << theObject.getNeedValue(i);
+            if(i <= 4)
+                os << ",";
+        }
+        os << "]";
+        return os;
+
+        /*
         //output operator for Object class
         os << theObject.name << " has the following needs: " << endl;
         for(size_t i = 0; i < theObject.effect.size(); i++){
             os << theObject.effect[i] << endl;
         }
         return os;
+        */
     };
     
 public:
     // Object constructor, initializes with name and vector of need effects, and two pointers that will point to the house and room they are in
     Object(const string& name, vector<int>& effect, tuple<int, int> xy) : name(name), effect(effect), house(nullptr), room(nullptr), hasRoom(false), coordinates(xy) {}
     
+    //Object copy function
+    Object(const Object& o);
+
     //getter for obtaining Object name
     const string& getName() const {return name;}
     const House* getHouse() const {return house;}
     const Room* getRoom() const {return room;}
     const tuple<int, int> getCoordinates() const{return coordinates;}
+    const vector<int> getEffect() const{return effect;}
 
     void setRoom(Room *r){room = r;}
     void setHouse(House *h){house = h;}
@@ -55,7 +75,7 @@ public:
     }
     void changeCoordinates(tuple<int, int> newcoords){coordinates = newcoords;}
     // function to obtain the effects the Object has on a Sim
-    const int getNeedValue(int i) {return effect[i];}
+    const int getNeedValue(int i) const {return effect[i];}
     // bool to see if the object is in a room
     bool inRoom() {return hasRoom;}
     
@@ -133,7 +153,7 @@ class Room{
         //output operator for Room class
         os << "The " << theRoom.name << " has the following objects inside: " << endl;
         for(size_t i = 0; i < theRoom.objects.size(); i++){
-            os << theRoom.objects[i]->getName() << endl;
+            os << (*theRoom.objects[i]) << endl;
         }
         return os;
     };
@@ -142,6 +162,9 @@ public:
     Room(const string& name) : name(name), house(nullptr), dimensions(tuple<int, int>{10,10}) {}
     Room(const string& name, const tuple<int, int>wh) : name(name), house(nullptr), dimensions(wh) {}
     
+    //Room copy function
+    Room(const Room& r);
+
     // forward declarations of Room methods
     void changeHouse(House* newhouse);
     void placeSim(Sim& sim);
@@ -149,9 +172,9 @@ public:
     void interactwithObjects(Sim& sim);
         
     //getters
-    const string& getName() {return name;}
-    vector<Object*> getObjects(){return objects;}
-    const tuple<int, int> getDimensions(){return dimensions;}
+    const string& getName() const{return name;}
+    const vector<Object*> getObjects() const{return objects;}
+    const tuple<int, int> getDimensions() const{return dimensions;}
     vector<Sim*> getSims(){return sims;}
 
 
@@ -166,11 +189,13 @@ public:
         	//check if outside the boundary of the room
         	tuple<int, int> c = object.getCoordinates();
         	if(get<0>(c) >= get<0>(dimensions) || get<0>(c) < 0){		//x out of bounds
-        		cout << "** Warning ** : " << object.getName() << " X coordinate is out of bounds! Moving to edge of boundary" << endl;
+        		if(SHOW_DEBUG)
+                    cout << "** Warning ** : " << object.getName() << " X coordinate is out of bounds! Moving to edge of boundary" << endl;
         		object.changeCoordinates(tuple<int,int>{(get<0>(c) < 0 ? 0 : get<0>(dimensions)-1),get<1>(c)});
         	}
         	if(get<1>(c) >= get<1>(dimensions) || get<1>(c) < 0){		//x out of bounds
-        		cout << "** Warning ** : " << object.getName() << " Y coordinate is out of bounds! Moving to edge of boundary" << endl;
+        		if(SHOW_DEBUG)
+                    cout << "** Warning ** : " << object.getName() << " Y coordinate is out of bounds! Moving to edge of boundary" << endl;
         		object.changeCoordinates(tuple<int,int>{get<0>(c),((get<1>(c) < 0) ? 0 : get<1>(dimensions)-1)});
         	}
 
@@ -182,7 +207,8 @@ public:
             object.setHouse(this->getHouse());
         }
         else{
-            cout << object.getName() << " is already in " << name << endl;
+            if(SHOW_DEBUG)
+                cout << object.getName() << " is already in " << name << endl;
         }
     }
     // helper function that checks if an object is currently inside the room
@@ -245,20 +271,25 @@ class House{
 public:
     // House constructor, initializes with a name
     House(const string& name) : name(name), fitness(0.0 ) {}
+
+    //House copy function
+    House(const House& h);
     
     // getters
-    const string& getName() {return name;}
-    const vector<Room*> getRooms(){return rooms;};
-    const float getFitness(){return fitness;}
+    const string& getName() const{return name;}
+    const vector<Room*> getRooms()const{return rooms;};
+    const float getFitness()const{return fitness;}
     
     void setFitness(float f){fitness = f;}
+    void setName(string n){name = n;}
     
     // method that adds a room to House
     void add_room(Room& room){
        
         if (roomInside(&room)){
             //if room already exists in the house, user is notified
-            cout << room.getName() << " is already in the house!" << endl;
+            if(SHOW_DEBUG)
+                cout << room.getName() << " is already in the house!" << endl;
         }
         else{
             // else, add the room to the House
@@ -275,7 +306,8 @@ public:
         
         for (size_t j = 0; j < sims.size(); j++){
             if (sims[j] == &sim){
-                cout << sim.getName() << " is already inside the house!" << endl;
+                if(SHOW_DEBUG)
+                    cout << sim.getName() << " is already inside the house!" << endl;
                 simPresent = true;
                 // if sim is already inside house, flag is set to true
                 break;
@@ -336,6 +368,7 @@ public:
     }
 
     //copies the contents of the house into another house object (DEEP COPY)
+    /*
     void copyHouse(House* newHouse){
 
         //copy the rooms first
@@ -363,6 +396,7 @@ public:
             newHouse->add_room(newRoom);
         }
     }
+    */
 
 
     //prints the house in ascii format
@@ -445,11 +479,15 @@ public:
 
 
         //add a key for good measure
-        houseRepFinal += "\n\nKey\n";
-        houseRepFinal += "@ : SIM\n";
-        for(o=0;o<objs.size();o++){
-            Object *obj = objs[o];
-            string name = obj->getName();
+        houseRepFinal += "\nKey\n";
+        if(sims.size() > 0)
+            houseRepFinal += "@ : SIM\n";
+
+        map<string, int> objsCt = getObjectCt();
+        map<string, int>::iterator oi;
+
+        for(oi=objsCt.begin();oi!=objsCt.end();++oi){
+            string name = oi->first;
 
             //[ascii_char] : [object_name]
             houseRepFinal += nameRep[name];

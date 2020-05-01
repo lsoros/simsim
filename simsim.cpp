@@ -1,17 +1,26 @@
 #include "includes/simsim_func.h"
 
-///////////////////////////////////
-//   MAIN LOOP EXPERIMENT CODE   //
-///////////////////////////////////
+void runExp();
 
+////////////////////////////////
+//   TESTER EXPERIMENT CODE   //
+////////////////////////////////
+
+
+tuple<int,int> randPos(tuple<int,int>dimen){
+	return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
+}
 
 void printNeeds(vector<int> needs){
-	int i;
-	for(i=0;i<needs.size();i++){
-		cout << needs[i];
-		if(i < needs.size()-1)
-			cout << " ";
-	}
+	cout << vec2str(needs);
+}
+
+void printObjCt(map<string, int>objsCt){
+    map<string, int>::iterator oi;
+
+    for(oi=objsCt.begin();oi!=objsCt.end();++oi){
+        cout << oi->first << ": " << oi->second << endl;
+    }
 }
 
 void showObjList(){
@@ -65,9 +74,7 @@ void showTestRoom(){
     
 }
 
-tuple<int,int> randPos(tuple<int,int>dimen){
-	return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
-}
+
 
 void simulateTest(){
 	//cout << "Getting object list...\n";
@@ -107,11 +114,162 @@ void simulateTest(){
     cout << "House Fitness: " << fitness << endl;
 }
 
+void cloneTest(){
+	//cout << "Getting object list...\n";
+	map<string, vector<int>> fullObjList = getfullObjList();
+
+	//cout << "Making ascii character map...\n";
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+
+	Sim sim("Foo Bar");
+    Room livingroom("Test Room", {5,5});
+    House testHouse("Some House");
+    testHouse.add_room(livingroom);
+    livingroom.placeSim(sim);
+    
+    //needs order: hunger, hygeine, bladder, energy, social, fun
+   	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(livingroom.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(livingroom.getDimensions()));
+
+    livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+
+// TEST CLONE OBJECT
+    Object bed2 = bed;
+    bed2.changeCoordinates({100,100});	//check if seperate entity
+
+    //cout << bed << endl;
+    //cout << bed2 << endl;
+
+// TEST CLONE ROOM
+
+    //duplicate rooms
+    Room room2 = livingroom;
+    Object athing("video game console", fullObjList["video game console"], randPos(room2.getDimensions()));
+    room2.add_object(athing);
+
+    //cout << livingroom << "\n" << endl;
+    //cout << room2 << endl;
+
+
+// TEST CLONE HOUSE
+    //make a copy of the house
+    House otherHouse = testHouse;
+    Room* otherRoom = otherHouse.getRooms()[0];
+
+   
+    Object cthing("microwave", fullObjList["microwave"], randPos(otherRoom->getDimensions()));
+    Object bthing("bed", fullObjList["bed"], randPos(otherRoom->getDimensions()));
+
+    otherRoom->add_object(cthing);
+    otherRoom->add_object(bthing);
+
+
+     //print the house
+    //cout << testHouse.asciiRep(charMap) << endl;
+    //cout << otherHouse.asciiRep(charMap) << endl;
+    
+}
+
+void noveltyTest(){
+	map<string, vector<int>> fullObjList = getfullObjList();
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	//create house 1
+    Room livingroom("Test Room", {3,3});
+    House testHouse("Some House");
+    testHouse.add_room(livingroom);
+   	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(livingroom.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(livingroom.getDimensions()));
+	livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+    //make a second smaller house
+    House house2("Another House");
+    Room bedroom("Bed Room", {3,3});
+    house2.add_room(bedroom);
+    Object bed2 = bed;
+    bedroom.add_object(bed2);
+
+    //make a second smaller house
+    House house3("Shitty House");
+    Room bathroom("Bath Room", {3,3});
+    house3.add_room(bathroom);
+    Object toilet2 = toilet;
+    bathroom.add_object(toilet2);
+
+    cout << testHouse.asciiRep(charMap) << endl;
+    cout << house2.asciiRep(charMap) << endl;
+    cout << house3.asciiRep(charMap) << endl;
+    
+
+
+	 //make a copy of the house
+    House otherHouse = testHouse;
+    otherHouse.setName("Copy House");
+    Room* otherRoom = otherHouse.getRooms()[0];
+    Object athing("video game console", fullObjList["video game console"], randPos(otherRoom->getDimensions()));
+    Object cthing("microwave", fullObjList["microwave"], randPos(otherRoom->getDimensions()));
+    Object bthing("bed", fullObjList["bed"], randPos(otherRoom->getDimensions()));
+    otherRoom->add_object(cthing);
+    otherRoom->add_object(bthing);
+    otherRoom->add_object(athing);
+
+    
+
+
+    list<House *>novelHouses;
+    novelHouses.push_back(&testHouse);
+    novelHouses.push_back(&house2);
+    novelHouses.push_back(&house3);
+
+    //simulate the first house
+    int _maxticks = 5;
+	vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
+
+    Sim s("Foo Bar");
+    otherRoom->placeSim(s);
+
+    cout << otherHouse.asciiRep(charMap) << endl;
+
+    float f1 = simulate(&s, _maxticks, decNeedRate, 30, needsRanking);
+
+    cout << "AVG DIST: " << avg_knn_dist(novelHouses, &otherHouse, 2) << endl;
+    cout << "IS NOVEL: " << isNovel(novelHouses, &otherHouse, f1) << endl;
+
+    cout << "\n" << endl;
+
+
+    cout << "\nHouse 1" << endl;
+    printObjCt(testHouse.getObjectCt());
+    cout << "\nHouse 2" << endl;
+    printObjCt(house2.getObjectCt());
+    cout << "\nHouse 3" << endl;
+    printObjCt(house3.getObjectCt());
+    cout << "\nTest House" << endl;
+    printObjCt(otherHouse.getObjectCt());
+    
+}
+
 int main(){
 	srand((unsigned) time(0));
+
+// TEST FUNCTIONS 
 	//showObjList();
 	//showTestRoom();
-	simulateTest();
+	//simulateTest();
+	//cloneTest();
+	//noveltyTest();
+
+// ACTUAL EXPERIMENT
+	//runExp();			//seg faults unless run (still missing initializer function and mutator)
 
 	return 1;
 }
@@ -119,11 +277,12 @@ int main(){
 
 
 
+///////////////////////////////////
+//   MAIN LOOP EXPERIMENT CODE   //
+///////////////////////////////////
 
 
-
-
-int runExp(){		//feel like some kind of arguments should go here; maybe file input?
+void runExp(){		//feel like some kind of arguments should go here; maybe file input?
 
 	///////    PARAMETERS  //////
 	int _popsize = 30;
@@ -158,8 +317,8 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 	int i;
 	for(i=0;i<_popsize;i++){
 		//mutate from the initial house
-		House mutHouse("Mutated_House #" + to_string(i));
-		initHouse.copyHouse(&mutHouse);
+		House mutHouse = initHouse;
+		mutHouse.setName("Mutated_House #" + to_string(i));
 		vector<Room *> rooms = mutHouse.getRooms();
 		int r;
 		for(r=0;r<rooms.size();r++){
@@ -180,13 +339,13 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 		list<House *>::iterator h;
 		for(h=population.begin();h != population.end();h++){
 			House *popHouse = (*h);
-			Sim testSim("Chell");		//make a new sim everytime to reset needs
+			Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
 
 			float fitness = simulate(&testSim, _maxticks, decNeedRate, 30, needsRanking);
 
 			bool foundNovelHouse = isNovel(novelHouses, popHouse, fitness);
 			if(foundNovelHouse)
-				addToNoveltySet(novelHouses, popHouse);
+				novelHouses.push_back(popHouse);
 		}
 
 		//a. create an empty list for the next generation's population
@@ -225,8 +384,7 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 			int m;
 			for(m=0;m<3;m++){
 				//copy
-				House noobHouse(curHouse->getName());
-				curHouse->copyHouse(&noobHouse);
+				House noobHouse = (*curHouse);
 
 				//mutate
 				int r;
@@ -253,7 +411,7 @@ int runExp(){		//feel like some kind of arguments should go here; maybe file inp
 
 	/* ASCII (or something) REPRESENTATION TEXT GOES HERE */
 
-	return 1;
+	return;
 }
 
 
