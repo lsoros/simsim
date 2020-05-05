@@ -67,6 +67,8 @@ public:
     void setRoom(Room *r){room = r;}
     void setHouse(House *h){house = h;}
 
+    string toJSON();
+
     // functions that change the color, cost and current room the object is in
     void changeColor(const string& newcolor) {color = newcolor;}
     void changeCost(const double& newcost) {cost = newcost;}
@@ -170,6 +172,8 @@ public:
     void placeSim(Sim& sim);
     Object* closestToSim(tuple<int, int>& coordinates, Sim& sim);
     void interactwithObjects(Sim& sim);
+
+    string toJSON();
         
     //getters
     const string& getName() const{return name;}
@@ -270,7 +274,8 @@ class House{
     };
 public:
     // House constructor, initializes with a name
-    House(const string& name) : name(name), fitness(0.0 ) {}
+    House(const string& name) : name(name), fitness(0.0), houseId(-1) {}
+    House(const string& name, const int id) : name(name), fitness(0.0), houseId(id) {}
 
     //House copy function
     House(const House& h);
@@ -279,9 +284,13 @@ public:
     const string& getName() const{return name;}
     const vector<Room*> getRooms()const{return rooms;};
     const float getFitness()const{return fitness;}
+    const int getId()const{return houseId;}
     
     void setFitness(float f){fitness = f;}
     void setName(string n){name = n;}
+    void setId(int i){houseId = i;}
+
+    string toJSON();
     
     // method that adds a room to House
     void add_room(Room& room){
@@ -506,6 +515,7 @@ private:
     vector<Sim*> sims;
     string name;
     float fitness;
+    int houseId;
 };
 
 

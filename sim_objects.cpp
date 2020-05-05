@@ -367,7 +367,7 @@ map<string, vector<int>> getfullObjList(){
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
     map<string, char> amap;
     string curUsedChars = "";
-    string extraChar = "1234567890!$%*+=[]{}:;?></|_\"\'^&()";
+    string extraChar = "1234567890!$%*+=[]{}:;?></|_^&()~";
 
     map<string, vector<int>>::iterator o;
     //assign a character representation for each object
@@ -417,4 +417,78 @@ map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
     return amap;
 }
 
+//////// JSON EXPORTING /////////
+
+//exports the house to a json file
+string House::toJSON(){
+   // map<string, vector<int>> fullObjList = getfullObjList();
+   // map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+    string json = "";
+    json += ("{ \"house_" + to_string(getId()) + "\": {\n");           //print the name
+    json += (" \"name\": \"" + getName() + "\",\n");             //print the id
+    json += (" \"fitness\": " + to_string(getFitness()) + ",\n");   //print the fitness
+    //json += (" \"map\": \"\n" + asciiRep(charMap) + "\",\n");     //multiline not supported in json
+    
+    json += ("  \"rooms\": [\n");       //start rooms
+        vector<Room*>rooms = getRooms();
+        int r;
+        for(r=0;r<rooms.size();r++){
+            json += rooms[r]->toJSON();
+            if(r < rooms.size()-1)
+                json += ",\n";
+            else
+                json += "\n";
+        }
+        json += "]\n";
+   
+    json += ("}}");         //close
+
+    return json;
+}
+
+string Room::toJSON(){
+    string json = "";
+    json += ("{ \"name\": \"" + getName() + "\",\n");     //print the name
+    json += (" \"dimensions\": ");                   //start dimensions
+        tuple<int,int> d = getDimensions();
+        json += ("{\"x\": " + to_string(get<0>(d)) + ", ");
+        json += ("\"y\": " + to_string(get<1>(d)) + "},\n");
+    json += (" \"objects\": [\n");                  //start objects
+        vector<Object *>objs = getObjects();
+        int o;
+        for(o=0;o<objs.size();o++){
+            json += objs[o]->toJSON();
+            if(o < objs.size()-1)
+                json += ",\n";
+            else
+                json += "\n";
+        }
+        json += "  ]\n";
+    json += "}";
+    return json;
+}
+
+string Object::toJSON(){
+    string json = "";
+    json += ("{ \"name\": \"" + getName() + "\",\n");     //print name
+    json += (" \"position\": ");                   //start dimensions
+        tuple<int,int> d = getCoordinates();
+        json += ("{\"x\": " + to_string(get<0>(d)) + ", ");
+        json += ("\"y\": " + to_string(get<1>(d)) + "},\n");
+    json += (" \"needFX\": {\n");                   //start needs
+        string needs[] = {"hunger", "hygeine", "bladder", "energy", "social", "fun"};
+        int f;
+        for(f=0;f<6;f++){
+            json += ("  \"" + needs[f] + "\": " + to_string(getNeedValue(f)));
+            if(f < 5)
+                json += ",\n";
+            else
+                json += "\n";
+        }
+        json += " }\n";
+    json += "}";
+
+    return json;
+}
 

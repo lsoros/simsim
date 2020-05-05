@@ -258,6 +258,31 @@ void noveltyTest(){
     
 }
 
+void jsonTEST(){
+	map<string, vector<int>> fullObjList = getfullObjList();
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	//create house 1
+    Room livingroom("Test Room", {3,3});
+    House testHouse("Some House", 100);
+    testHouse.add_room(livingroom);
+   	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(livingroom.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(livingroom.getDimensions()));
+	livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+    //cout << "---OBJ:---\n" << bed.toJSON() << endl;
+    //cout << "---ROOM:---\n" << livingroom.toJSON() << endl;
+    //cout << "---HOUSE:---\n" << testHouse.toJSON() << endl;
+
+    ofstream houseFile("NOVEL_OUTPUT/House_" + to_string(testHouse.getId()) + ".json");
+	houseFile << testHouse.toJSON() << "\n";
+	houseFile.close();
+		
+}
+
 int main(){
 	srand((unsigned) time(0));
 
@@ -267,6 +292,7 @@ int main(){
 	//simulateTest();
 	//cloneTest();
 	//noveltyTest();
+	jsonTEST();
 
 // ACTUAL EXPERIMENT
 	//runExp();			//seg faults unless run (still missing initializer function and mutator)
@@ -302,8 +328,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 //1. initial seed generation code 
 	/* WRITE INIT CODE HERE */
-	House initHouse("Laboratory");		//experiments done in labs :)
-
+	int houseIdIndex = 1;
+	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
+	houseIdIndex++;
 
 
 
@@ -318,6 +345,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	for(i=0;i<_popsize;i++){
 		//mutate from the initial house
 		House mutHouse = initHouse;
+		mutHouse.setId(houseIdIndex);
 		mutHouse.setName("Mutated_House #" + to_string(i));
 		vector<Room *> rooms = mutHouse.getRooms();
 		int r;
@@ -327,6 +355,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 		//add to the population
 		population.push_back(&mutHouse);
+
+		//increment index
+		houseIdIndex++;
 	}
 
 
@@ -374,7 +405,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 
 		//d. mutate each parent 3x and add generated offspring to new population
-		
+
 		//could use a while loop here, but meh same result (theoretically)
 		for (int i = 0; i < _popsize; ++i){
 			//pop off
@@ -385,6 +416,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 			for(m=0;m<3;m++){
 				//copy
 				House noobHouse = (*curHouse);
+				noobHouse.setId(houseIdIndex);
 
 				//mutate
 				int r;
@@ -395,6 +427,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 				//add
 				newPop.push_back(&noobHouse);
+
+				//increment counter
+				houseIdIndex++;
 			}
 		}
 
@@ -408,8 +443,17 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 
 //4. dump the rooms to archive
+	list<House*>::iterator n;
+	for(n=novelHouses.begin();n!=novelHouses.end();n++){
+		House *nov_house = (*n);
+		ofstream houseFile("NOVEL_OUTPUT/House_" + to_string(nov_house->getId()) + ".json");
+		houseFile << nov_house->toJSON() << "\n";
+		houseFile.close();
+	}
+	
+	
 
-	/* ASCII (or something) REPRESENTATION TEXT GOES HERE */
+
 
 	return;
 }
