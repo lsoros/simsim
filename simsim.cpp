@@ -332,7 +332,16 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
 	houseIdIndex++;
 
+	Room r("Experiment Room");
+    initHouse.add_room(r);
 
+    map<string, vector<int>> fullObjList = getfullObjList();
+	Object fridge("fridge", fullObjList["fridge"], randPos(r.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(r.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(r.getDimensions()));
+	r.add_object(fridge);
+    r.add_object(toilet);
+    r.add_object(bed);
 
 
 
