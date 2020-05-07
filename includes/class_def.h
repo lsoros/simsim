@@ -508,7 +508,105 @@ public:
         return houseRepFinal;
     }
 
-    
+    //prints the house in ascii format (literal with "\n")
+    string asciiRepLit(map<string, char> nameRep){
+       
+        //do for one room for now
+        tuple<int,int> dim = this->getRooms()[0]->getDimensions();
+        int w = get<0>(dim);
+        int h = get<1>(dim);
+
+        //make an empty house first
+        string houseRep = "";
+        int r;
+        int c;
+
+        char wall = '#';
+        char empty = '.';
+
+        for(r=0;r<w;r++){
+            for(c=0;c<h;c++){
+
+                //all empty space first
+                houseRep += empty;
+                
+            }
+        }
+
+        //map the objects
+        vector<Object *> objs = this->getRooms()[0]->getObjects(); //only one room for now so just use that 
+        int o;
+        for(o=0;o<objs.size();o++){
+            tuple<int,int>pos = objs[o]->getCoordinates();
+            string name = objs[o]->getName();
+            int index = get<0>(pos) + w*get<1>(pos);
+            houseRep[index] = nameRep[name];
+        }
+
+            
+        //add the sims
+        char sim = '@';
+        vector<Sim *> sims = this->getRooms()[0]->getSims();
+        int s;
+        for(s=0;s<sims.size();s++){
+            Sim *curSim = sims[s];
+            tuple<int,int>pos = curSim->getCoordinates();
+            int index = get<0>(pos) + w*get<1>(pos);
+            houseRep[index] = sim;
+        }
+
+
+        //add finishing format touches
+        string houseRepFinal = "";
+        int a;
+        //top wall
+        for(a=0;a<(w+2);++a){
+            houseRepFinal += wall;
+        }
+        houseRepFinal += "\\n";
+
+        for(a=0;a<houseRep.length();++a){
+            //add side wall
+            if(a % (w) == 0){
+                houseRepFinal += wall;
+            }
+
+            houseRepFinal += houseRep[a];
+
+            //add side wall and new line
+            if((a+1) % w == 0){
+                houseRepFinal += wall;
+                houseRepFinal += "\\n";
+            }
+        }
+
+        //bottom wall
+        for(a=0;a<(w+2);++a){
+            houseRepFinal += wall;
+        }
+        houseRepFinal += "\\n";
+
+
+        //add a key for good measure
+        houseRepFinal += "\\nKey\\n";
+        if(sims.size() > 0)
+            houseRepFinal += "@ : SIM\\n";
+
+        map<string, int> objsCt = getObjectCt();
+        map<string, int>::iterator oi;
+
+        for(oi=objsCt.begin();oi!=objsCt.end();++oi){
+            string name = oi->first;
+
+            //[ascii_char] : [object_name]
+            houseRepFinal += nameRep[name];
+            houseRepFinal += " : ";
+            houseRepFinal += name;
+            houseRepFinal += "\\n";
+        }
+
+        return houseRepFinal;
+    }
         
 private:
     vector<Room*> rooms;

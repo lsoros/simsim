@@ -421,14 +421,14 @@ map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList){
 
 //exports the house to a json file
 string House::toJSON(){
-   // map<string, vector<int>> fullObjList = getfullObjList();
-   // map<string, char> charMap = makeObjAsciiMap(fullObjList);
+    map<string, vector<int>> fullObjList = getfullObjList();
+    map<string, char> charMap = makeObjAsciiMap(fullObjList);
 
     string json = "";
     json += ("{ \"house_" + to_string(getId()) + "\": {\n");           //print the name
     json += (" \"name\": \"" + getName() + "\",\n");             //print the id
     json += (" \"fitness\": " + to_string(getFitness()) + ",\n");   //print the fitness
-    //json += (" \"map\": \"\n" + asciiRep(charMap) + "\",\n");     //multiline not supported in json
+    json += (" \"map\": \"" + asciiRepLit(charMap) + "\",\n");     //multiline not supported in json
     
     json += ("  \"rooms\": [\n");       //start rooms
         vector<Room*>rooms = getRooms();

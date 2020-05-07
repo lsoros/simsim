@@ -275,7 +275,7 @@ void jsonTEST(){
 
     //cout << "---OBJ:---\n" << bed.toJSON() << endl;
     //cout << "---ROOM:---\n" << livingroom.toJSON() << endl;
-    //cout << "---HOUSE:---\n" << testHouse.toJSON() << endl;
+   	cout << "---HOUSE:---\n" << testHouse.toJSON() << endl;
 
     ofstream houseFile("NOVEL_OUTPUT/House_" + to_string(testHouse.getId()) + ".json");
 	houseFile << testHouse.toJSON() << "\n";
