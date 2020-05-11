@@ -74,6 +74,24 @@ void showTestRoom(){
     
 }
 
+void addRandObjects(Room& room){
+	//getting the full object list
+	map<string, vector<int> > fullObjList = getfullObjList();
+	// map iterator
+	map<string, vector<int> >::iterator it;
+	// get a random number out of the 80 objects
+	int objnum = rand() % 80
+	// get the object name by using iterator arithmetic, then dereferencing, and getting the key
+	string objname = (*(it + objnum)).first;
+	// get object FX needs by using iterator arithmetic, then dereferencing, and getting mapped value
+	vector<int> objFX = (*(it + objnum)).second;
+	// new object of the random object
+	Object newobj(objname, objFX, randPos(room.getDimensions()));
+	// add object to room
+	room.add_object(newobj);
+
+}
+
 
 
 void simulateTest(){
