@@ -262,11 +262,15 @@ public:
         return true;
     }
 
-    inline bool place_object(Object& object, tuple<int, int> coordinates)
+    //inline bool place_object(Object& object, tuple<int, int> coordinates)
+    inline bool place_object(string objName, tuple<int, int> coordinates)
     {
+        map<string, vector<int>> object_list = getfullObjList();
         //graph search to find next position?
         if(check_position(coordinates)) {
-            objects.push_back(&object);
+             Object *no = new Object(objName, object_list[objName], coordinates);
+            add_object(*no);
+            //objects.push_back(&object);
             return true;
         }
         else {
@@ -276,8 +280,10 @@ public:
             for(int i=0;i<4;i++) {
                 if(check_position({get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]})){
                     tuple<int, int> pnew = {get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]};
-                    object.changeCoordinates(pnew);
-                    objects.push_back(&object);
+                    Object *no = new Object(objName, object_list[objName], pnew);
+                    add_object(*no);
+                    //object.changeCoordinates(pnew);
+                    //objects.push_back(&object);
                     return true;
                 }
             }
@@ -314,6 +320,7 @@ public:
 
     inline void mutate_objects(){
         float _mut_add_prob = 30;
+        //float _mut_add_prob = 100;
 	    float _mut_delete_prob = 10;
 	    float _mut_move_prob = 40;
         int randomNum = (rand() %101);
@@ -322,7 +329,11 @@ public:
         for (int i = 0; i < object_list.size(); i++){
             if(randomNum <= (_mut_delete_prob)){
                 //deleting an object
+
                 Object* obj = delete_object(i);
+                if(obj != nullptr){
+                    cout << "** DELETED OBJECT **" << endl;
+                }
                 //object obj was deleted
 
             }
@@ -331,6 +342,10 @@ public:
                 tuple<int, int> new_coordinates = randPos(getDimensions());
                 Object* current_obj = objects[i];
                 bool did_it_happen = move_object(current_obj, new_coordinates);
+
+                if(did_it_happen){
+                    cout << "** MOVED OBJECT " << objects[i]->getName() << " **" << endl;
+                }
 
             }
             else{
@@ -348,8 +363,13 @@ public:
             string new_object_p = it->first;
             //generate coordinates and then place object
             tuple<int, int> new_coordinates = randPos(getDimensions());
-            Object new_object(new_object_p, object_list[new_object_p], new_coordinates);
-            bool did_it_happen = place_object(new_object, new_coordinates);    
+            //Object new_object(new_object_p, object_list[new_object_p], new_coordinates);
+            bool did_it_happen = place_object(new_object_p, new_coordinates); 
+            if(did_it_happen){
+                //cout << "** ADDED OBJECT " << new_object.getName() << " **" << endl; 
+                cout << "** ADDED OBJECT **" << endl; 
+            }  
+            
         }
 
     }

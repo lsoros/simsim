@@ -70,13 +70,14 @@ void showTestRoom(){
     
 }
 
+/*
 void addRandObjects(Room& room){
 	//getting the full object list
 	map<string, vector<int> > fullObjList = getfullObjList();
 	// map iterator
 	map<string, vector<int> >::iterator it;
 	// get a random number out of the 80 objects
-	int objnum = rand() % 80
+	int objnum = rand() % 80;
 	// get the object name by using iterator arithmetic, then dereferencing, and getting the key
 	string objname = (*(it + objnum)).first;
 	// get object FX needs by using iterator arithmetic, then dereferencing, and getting mapped value
@@ -88,7 +89,7 @@ void addRandObjects(Room& room){
 
 }
 
-
+*/
 
 void simulateTest(){
 	//cout << "Getting object list...\n";
@@ -297,6 +298,36 @@ void jsonTEST(){
 		
 }
 
+void testMut(){
+	map<string, vector<int>> fullObjList = getfullObjList();
+	map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	//create house 1
+    Room livingroom("Test Room", {3,3});
+    House testHouse("Some House", 100);
+    testHouse.add_room(livingroom);
+   	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(livingroom.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(livingroom.getDimensions()));
+	livingroom.add_object(fridge);
+    livingroom.add_object(toilet);
+    livingroom.add_object(bed);
+
+    cout << "---HOUSE:---\n" << testHouse.asciiRep(charMap) << endl;
+
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+
+    cout << "---HOUSE:---\n" << testHouse.asciiRep(charMap) << endl;
+
+
+}
+
+
 int main(){
 	srand((unsigned) time(0));
 
@@ -306,7 +337,8 @@ int main(){
 	//simulateTest();
 	//cloneTest();
 	//noveltyTest();
-	jsonTEST();
+	//jsonTEST();
+	testMut();
 
 // ACTUAL EXPERIMENT
 	//runExp();			//seg faults unless run (still missing initializer function and mutator)

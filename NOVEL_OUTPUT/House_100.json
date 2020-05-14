@@ -1,13 +1,13 @@
 { "house_100": {
  "name": "Some House",
  "fitness": 0.000000,
- "map": "#####\n#e..#\n#.[g#\n#...#\n#####\n\nKey\ne : bed\ng : fridge\n[ : toilet\n",
+ "map": "#####\n#[..#\n#...#\n#e.g#\n#####\n\nKey\ne : bed\ng : fridge\n[ : toilet\n",
   "rooms": [
 { "name": "Test Room",
  "dimensions": {"x": 3, "y": 3},
  "objects": [
 { "name": "fridge",
- "position": {"x": 2, "y": 1},
+ "position": {"x": 2, "y": 2},
  "needFX": {
   "hunger": 5,
   "hygeine": 0,
@@ -18,7 +18,7 @@
  }
 },
 { "name": "toilet",
- "position": {"x": 1, "y": 1},
+ "position": {"x": 0, "y": 0},
  "needFX": {
   "hunger": 0,
   "hygeine": 0,
@@ -29,7 +29,7 @@
  }
 },
 { "name": "bed",
- "position": {"x": 0, "y": 0},
+ "position": {"x": 0, "y": 2},
  "needFX": {
   "hunger": -1,
   "hygeine": -1,
