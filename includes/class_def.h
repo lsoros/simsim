@@ -247,7 +247,112 @@ public:
         sims.pop_back();
     }
 
-    inline void mutate_objects(){}
+    bool check_position(tuple<int,int> coordinates)
+    {
+        // Check if coordinates lie within the bounding box. If they don't return false. Else continue.
+
+        tuple<int, int> dimensions = getDimensions();
+        
+        if(get<0>(coordinates) < 0 || get<0>(coordinates) >= get<0>(dimensions) || get<1>(coordinates) <0 || get<1>(coordinates) >= get<1>(dimensions)){
+            return false;
+        }
+        
+        for(auto obj:objects) if(obj->getCoordinates() == coordinates) return false;
+        
+        return true;
+    }
+
+    inline bool place_object(Object& object, tuple<int, int> coordinates)
+    {
+        //graph search to find next position?
+        if(check_position(coordinates)) {
+            objects.push_back(&object);
+            return true;
+        }
+        else {
+            // check neighbours
+            int x[] = {0,1,0,-1};
+            int y[] = {1,0,-1,0};
+            for(int i=0;i<4;i++) {
+                if(check_position({get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]})){
+                    tuple<int, int> pnew = {get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]};
+                    object.changeCoordinates(pnew);
+                    objects.push_back(&object);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    inline bool move_object(Object* object, tuple<int, int> coordinates)
+    {
+        //graph search to find next position?
+        if(check_position(coordinates)) {
+            object->changeCoordinates(coordinates);
+            return true;
+        }
+        else {
+            // check neighbours
+            int x[] = {0,1,0,-1};
+            int y[] = {1,0,-1,0};
+            for(int i=0;i<4;i++) {
+                if(check_position({get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]})){
+                    tuple<int, int> pnew = {get<0>(coordinates) + x[i], get<1>(coordinates) + y[i]};
+                    object->changeCoordinates(pnew);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }     
+    
+    inline Object* delete_object(int position){
+        Object * obj = objects[position];
+        objects.erase(objects.begin()+position);
+        return obj;
+    }
+
+    inline void mutate_objects(){
+        float _mut_add_prob = 30;
+	    float _mut_delete_prob = 10;
+	    float _mut_move_prob = 40;
+        int randomNum = (rand() %101);
+
+        vector<Object*> object_list = getObjects();
+        for (int i = 0; i < object_list.size(); i++){
+            if(randomNum <= (_mut_delete_prob)){
+                //deleting an object
+                Object* obj = delete_object(i);
+                //object obj was deleted
+
+            }
+            else if(randomNum <= (_mut_delete_prob + _mut_move_prob)){
+                //moving an object
+                tuple<int, int> new_coordinates = randPos(getDimensions());
+                Object* current_obj = objects[i];
+                bool did_it_happen = move_object(current_obj, new_coordinates);
+
+            }
+            else{
+                //do no mutation
+            }
+         randomNum = (rand() %101);
+        }
+
+        randomNum = (rand() %101);
+        if(randomNum <= (_mut_add_prob)){
+            //add an object
+            map<string, vector<int>> object_list = getfullObjList();
+            auto it = object_list.begin();
+            std::advance(it, rand() % object_list.size());
+            string new_object_p = it->first;
+            //generate coordinates and then place object
+            tuple<int, int> new_coordinates = randPos(getDimensions());
+            Object new_object(new_object_p, object_list[new_object_p], new_coordinates);
+            bool did_it_happen = place_object(new_object, new_coordinates);    
+        }
+
+    }
     
 private:
     string name;
