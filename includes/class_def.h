@@ -24,6 +24,7 @@ map<string, vector<int>> getfullObjList();  //retrieves the object list in the f
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
 string tup2str(tuple<int,int>t);
 string vec2str(vector<int>v);
+tuple<int,int> randPos(tuple<int,int>dimen);
 
 //////////////////     CLASS DEFINITIONS     ///////////////////
 

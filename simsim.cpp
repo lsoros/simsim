@@ -7,10 +7,6 @@ void runExp();
 ////////////////////////////////
 
 
-tuple<int,int> randPos(tuple<int,int>dimen){
-	return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
-}
-
 void printNeeds(vector<int> needs){
 	cout << vec2str(needs);
 }

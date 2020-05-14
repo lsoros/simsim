@@ -492,3 +492,7 @@ string Object::toJSON(){
     return json;
 }
 
+tuple<int,int> randPos(tuple<int,int>dimen){
+    return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
+}
+
