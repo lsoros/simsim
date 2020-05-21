@@ -2,6 +2,7 @@
 #include "includes/class_def.h"
 
 bool  SHOW_DEBUG = false;
+bool  SHOW_MUT_DEBUG = false;
 
 string tup2str(tuple<int,int>t){
     return to_string(get<0>(t)) + "," + to_string(get<1>(t));
@@ -495,4 +496,11 @@ string Object::toJSON(){
 tuple<int,int> randPos(tuple<int,int>dimen){
     return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
 }
+int randVal(tuple<int,int>r){
+    return rand() % (get<1>(r) - get<0>(r)+1) + get<0>(r);
+}
+tuple<int,int> randDim(tuple<int,int>r){
+    return {randVal(r), randVal(r)};
+}
+
 

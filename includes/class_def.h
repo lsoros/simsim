@@ -11,6 +11,7 @@
 using namespace std;
 
 extern bool SHOW_DEBUG;
+extern bool SHOW_MUT_DEBUG;
 
 
 // class forward declarations
@@ -24,7 +25,9 @@ map<string, vector<int>> getfullObjList();  //retrieves the object list in the f
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
 string tup2str(tuple<int,int>t);
 string vec2str(vector<int>v);
-tuple<int,int> randPos(tuple<int,int>dimen);
+tuple<int,int> randPos(tuple<int,int>dimen);        //random position within dimensions
+int randVal(tuple<int,int>r);            //random number between x and y
+tuple<int,int> randDim(tuple<int,int>r);            //random dimensions between x and y
 
 //////////////////     CLASS DEFINITIONS     ///////////////////
 
@@ -332,7 +335,7 @@ public:
                 //deleting an object
 
                 Object* obj = delete_object(i);
-                if(obj != nullptr){
+                if(obj != nullptr && SHOW_MUT_DEBUG){
                     cout << "** DELETED "<< obj->getName() << " **" << endl;
                 }
                 //object obj was deleted
@@ -344,7 +347,7 @@ public:
                 Object* current_obj = objects[i];
                 bool did_it_happen = move_object(current_obj, new_coordinates);
 
-                if(did_it_happen){
+                if(did_it_happen && SHOW_MUT_DEBUG){
                     cout << "** MOVED " << objects[i]->getName() << " **" << endl;
                 }
 
@@ -366,7 +369,7 @@ public:
             tuple<int, int> new_coordinates = randPos(getDimensions());
             //Object new_object(new_object_p, object_list[new_object_p], new_coordinates);
             bool did_it_happen = place_object(new_object_p, new_coordinates); 
-            if(did_it_happen){
+            if(did_it_happen && SHOW_MUT_DEBUG){
                 //cout << "** ADDED OBJECT " << new_object.getName() << " **" << endl; 
                 cout << "** ADDED " << new_object_p << "**" << endl; 
             }  

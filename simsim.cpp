@@ -256,7 +256,7 @@ void noveltyTest(){
 
     float f1 = simulate(&s, _maxticks, decNeedRate, 30, needsRanking);
 
-    cout << "AVG DIST: " << avg_knn_dist(novelHouses, &otherHouse, 2) << endl;
+    cout << "AVG DIST: " << avg_knn_dist(novelHouses, &otherHouse, 10) << endl;
     cout << "IS NOVEL: " << isNovel(novelHouses, &otherHouse, f1) << endl;
 
     cout << "\n" << endl;
@@ -295,6 +295,10 @@ void jsonTEST(){
     ofstream houseFile("NOVEL_OUTPUT/House_" + to_string(testHouse.getId()) + ".json");
 	houseFile << testHouse.toJSON() << "\n";
 	houseFile.close();
+
+	houseFile.open("NOVEL_OUTPUT/House_" + to_string(testHouse.getId()) + "_2.json");
+	houseFile << testHouse.toJSON() << "\n";
+	houseFile.close();
 		
 }
 
@@ -303,7 +307,7 @@ void testMut(){
 	map<string, char> charMap = makeObjAsciiMap(fullObjList);
 
 	//create house 1
-    Room livingroom("Test Room", {10,10});
+    Room livingroom("Test Room", {5,5});
     House testHouse("Some House", 100);
     testHouse.add_room(livingroom);
    	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
@@ -328,6 +332,17 @@ void testMut(){
     cout << "---HOUSE:---\n" << testHouse.asciiRep(charMap) << endl;
 
 
+    //test simulation
+    /*
+    Sim sim("Foo Bar");
+    livingroom.placeSim(sim);
+    //simulate
+    vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{0,2,3,1,4,5};
+	int _maxticks = 100;
+    float fitness = simulate(&sim, _maxticks, decNeedRate, 3, needsRanking);
+    cout << "House Fitness: " << fitness << endl;
+	*/
 }
 
 
@@ -340,8 +355,8 @@ int main(){
 	//simulateTest();
 	//cloneTest();
 	//noveltyTest();
-	//jsonTEST();
-	testMut();
+	jsonTEST();
+	//testMut();
 
 // ACTUAL EXPERIMENT
 	//runExp();			//seg faults unless run (still missing initializer function and mutator)
@@ -385,6 +400,8 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
     initHouse.add_room(r);
 
     map<string, vector<int>> fullObjList = getfullObjList();
+    map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
 	Object fridge("fridge", fullObjList["fridge"], randPos(r.getDimensions()));
     Object toilet("toilet", fullObjList["toilet"], randPos(r.getDimensions()));
     Object bed("bed", fullObjList["bed"], randPos(r.getDimensions()));
@@ -402,17 +419,17 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	int i;
 	for(i=0;i<_popsize;i++){
 		//mutate from the initial house
-		House mutHouse = initHouse;
-		mutHouse.setId(houseIdIndex);
-		mutHouse.setName("Mutated_House #" + to_string(i));
-		vector<Room *> rooms = mutHouse.getRooms();
+		House *mutHouse = new House(initHouse);
+		mutHouse->setId(houseIdIndex);
+		mutHouse->setName("Mutated_House #" + to_string(i));
+		vector<Room *> rooms = mutHouse->getRooms();
 		int r;
 		for(r=0;r<rooms.size();r++){
 			rooms[r]->mutate_objects();			//function from the mutationsbranch (will be merged later)
 		}
 
 		//add to the population
-		population.push_back(&mutHouse);
+		population.push_back(mutHouse);
 
 		//increment index
 		houseIdIndex++;
@@ -423,18 +440,31 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 //3. While curGen < generations
 	while(curGen < _generations){
+		cout << "-- GENERATION: " << curGen << " --" << endl;
 
 		//3.5 i'm assuming the simulation would go somewhere here followed by novelty assignment
+			//cout << " ...simulating" << endl;
 		list<House *>::iterator h;
 		for(h=population.begin();h != population.end();h++){
 			House *popHouse = (*h);
-			Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
 
-			float fitness = simulate(&testSim, _maxticks, decNeedRate, 30, needsRanking);
+				//cout << "---HOUSE:---\n" << popHouse->asciiRep(charMap) << endl;
+				
+
+			
+			Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
+			popHouse->getRooms()[0]->placeSim(testSim);
+			tuple<int, int> newXY = randPos(testSim.getRoom()->getDimensions());
+			testSim.changeCoordinates(newXY);
+
+			float fitness = simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
+				
 
 			bool foundNovelHouse = isNovel(novelHouses, popHouse, fitness);
+			cout << popHouse->getId() << " = " << fitness << " -> "  << foundNovelHouse << endl;
 			if(foundNovelHouse)
 				novelHouses.push_back(popHouse);
+			
 		}
 
 		//a. create an empty list for the next generation's population
@@ -443,54 +473,84 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 		//b + c. randomly select (popsize/6) houses from the novel archive and the population to be parents
 		// (shuffles the list then pick the first n elements)
+			//cout << " ...parenting" << endl;
 		int parentNum = round(_popsize/6);
 
 		vector<House *>pseudoPop(population.begin(), population.end());		//copy for safety
 		random_shuffle(pseudoPop.begin(), pseudoPop.end());
 
-		vector<House *>pseudoNovel(novelHouses.begin(), population.end());	//copy archive likewise
+		vector<House *>pseudoNovel(novelHouses.begin(), novelHouses.end());	//copy archive likewise
 		random_shuffle(pseudoNovel.begin(), pseudoNovel.end());
+
+			//cout << "shuffled!" << endl;
 
 		list<House *>parentSet;					//add both to the parent set
 		int p;
 		for(p=0;p<parentNum;p++){
-			House *popHouse = pseudoPop[p];
-			House *novHouse = pseudoNovel[p];
+			parentSet.push_back(pseudoPop[p]);
 
-			parentSet.push_back(popHouse);
-			parentSet.push_back(novHouse);
+			//if you have enough novel houses, choose them as parents
+			if(p < pseudoNovel.size()){
+				parentSet.push_back(pseudoNovel[p]);
+			}else{
+				parentSet.push_back(pseudoPop[pseudoPop.size()-p]);
+			}
+			
 		}
 
+			/*
+			for(h=parentSet.begin();h != parentSet.end();h++){
+				cout << "---HOUSE:---\n" << (*h)->asciiRep(charMap) << endl;
+			}
+			*/
 
 		//d. mutate each parent 3x and add generated offspring to new population
-
+			//cout << " ...mutating" << endl;
+			//cout << to_string(_popsize) << " - " << to_string(parentSet.size()) << endl;
+		
 		//could use a while loop here, but meh same result (theoretically)
-		for (int i = 0; i < _popsize; ++i){
+		for (int i = 0; i < (_popsize/3); ++i){
 			//pop off
-			House *curHouse = parentSet.front();
-			parentSet.pop_front();
+			//House *curHouse = parentSet.front();
+			
+				//cout << to_string(i) << endl;
 
 			int m;
 			for(m=0;m<3;m++){
 				//copy
-				House noobHouse = (*curHouse);
-				noobHouse.setId(houseIdIndex);
+				House *noobHouse = new House(*(parentSet.front()));
+				noobHouse->setId(houseIdIndex);
+				noobHouse->setName(noobHouse->getName() + "." + to_string(m));
 
+				
 				//mutate
 				int r;
-				vector<Room *>noobRooms = noobHouse.getRooms();
+				vector<Room *>noobRooms = noobHouse->getRooms();
 				for(r=0;r<noobRooms.size();r++){
 					noobRooms[r]->mutate_objects();
 				}
+				
 
 				//add
-				newPop.push_back(&noobHouse);
+				newPop.push_back(noobHouse);
 
 				//increment counter
 				houseIdIndex++;
 			}
-		}
+			
+			parentSet.pop_front();
 
+				//cout << "next parent" << endl;
+		}
+			//cout << "finished new set!" << endl;
+
+			/*
+			for(h=population.begin();h != population.end();h++){
+				cout << (*h)->getName() << endl;
+			}
+
+			cout << "...setting new population" << endl;
+			*/
 
 		//e. replace old population (garbage collection should delete it)
 		population = newPop;
@@ -500,13 +560,22 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	}
 
 
+	cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
+
 //4. dump the rooms to archive
+	ofstream houseFile;
 	list<House*>::iterator n;
 	for(n=novelHouses.begin();n!=novelHouses.end();n++){
 		House *nov_house = (*n);
-		ofstream houseFile("NOVEL_OUTPUT/House_" + to_string(nov_house->getId()) + ".json");
-		houseFile << nov_house->toJSON() << "\n";
-		houseFile.close();
+		cout << "---HOUSE:---\n" << nov_house->asciiRep(charMap) << endl;
+
+		houseFile.open("NOVEL_OUTPUT/House_" + to_string(nov_house->getId()) + ".json");
+		if(houseFile){
+			string js = nov_house->toJSON();
+			houseFile << js << "\n";
+			houseFile.close();
+		}
+		
 	}
 	
 	

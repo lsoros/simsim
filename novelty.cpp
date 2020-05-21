@@ -24,7 +24,9 @@ bool isNovel(list<House *> novelSet, House* h, float simFitness){
 		return false;
 	}
 
-	float nd = avg_knn_dist(novelSet, h, K_VALUE);
+	int real_k = (K_VALUE > novelSet.size() ? novelSet.size() : K_VALUE);
+
+	float nd = avg_knn_dist(novelSet, h, real_k);
 	if(nd >= MINIMUM_NOVEL_DISTANCE)				//if distance is big enough, return as novel
 		return true;
 	else
@@ -104,7 +106,8 @@ float avg_knn_dist(list<House*> neighbors, House* noob, int k){
 		d_sum += kvec[i].second;
 	}
 
-	return d_sum/k;
+
+	return d_sum/k_min;
 
 }
 
