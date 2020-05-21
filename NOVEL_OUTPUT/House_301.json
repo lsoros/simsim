@@ -1,0 +1,89 @@
+{ "house_301": {
+ "name": "Mutated_House #0.2.0.1.0.2.0.2",
+ "fitness": 0.000000,
+ "map": "############\n#......@O..#\n#.........e#\n#..........#\n#..........#\n#.....5....#\n#.....c....#\n#..........#\n#.......e..#\n#...._.....#\n#..........#\n############\n\nKey\n@ : SIM\n_ : _clock\ne : bed\nO : bookcase\nc : calculator\ng : fridge\n5 : night stand\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 6, "y": 0},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "bed",
+ "position": {"x": 7, "y": 7},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "bookcase",
+ "position": {"x": 7, "y": 0},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 2
+ }
+},
+{ "name": "bed",
+ "position": {"x": 9, "y": 1},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "calculator",
+ "position": {"x": 5, "y": 5},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "night stand",
+ "position": {"x": 5, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "_clock",
+ "position": {"x": 4, "y": 8},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

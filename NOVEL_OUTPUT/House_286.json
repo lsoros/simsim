@@ -1,0 +1,78 @@
+{ "house_286": {
+ "name": "Mutated_House #0.2.0.1.0.2.1.2.0.2",
+ "fitness": 0.000000,
+ "map": "############\n#.O....@H..#\n#..........#\n#..........#\n#..g.......#\n#..........#\n#.....e....#\n#..........#\n#....L.....#\n#...e......#\n#..........#\n############\n\nKey\n@ : SIM\ne : bed\nO : bookcase\nH : chess table\nL : foosball table\ng : fridge\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 2, "y": 3},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "bed",
+ "position": {"x": 5, "y": 5},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "bookcase",
+ "position": {"x": 1, "y": 0},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 2
+ }
+},
+{ "name": "bed",
+ "position": {"x": 3, "y": 8},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "foosball table",
+ "position": {"x": 4, "y": 7},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 3,
+  "fun": 5
+ }
+},
+{ "name": "chess table",
+ "position": {"x": 7, "y": 0},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 2
+ }
+}
+  ]
+}
+]
+}}

@@ -1,0 +1,56 @@
+{ "house_270": {
+ "name": "Mutated_House #15.0.0.1.0.2.1.1",
+ "fitness": 0.000000,
+ "map": "############\n#......@...#\n#........A.#\n#..........#\n#..........#\n#..........#\n#........e.#\n#.....g....#\n#.........+#\n#..........#\n#..........#\n############\n\nKey\n@ : SIM\nA : arcade game\ne : bed\ng : fridge\n+ : table tennis\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 5, "y": 6},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "bed",
+ "position": {"x": 8, "y": 5},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "arcade game",
+ "position": {"x": 8, "y": 1},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 4
+ }
+},
+{ "name": "table tennis",
+ "position": {"x": 9, "y": 7},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 3,
+  "fun": 5
+ }
+}
+  ]
+}
+]
+}}

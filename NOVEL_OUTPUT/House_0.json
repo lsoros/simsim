@@ -1,0 +1,34 @@
+{ "house_2": {
+ "name": "Mutated_House #0",
+ "fitness": -384.507568,
+ "map": "############\n#..........#\n#..........#\n#..........#\n#..........#\n#....g.....#\n#..........#\n#..........#\n#..@.......#\n#..........#\n#.[........#\n############\n\nKey\n@ : SIM\ng : fridge\n[ : toilet\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 4, "y": 4},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "toilet",
+ "position": {"x": 1, "y": 9},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 5,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

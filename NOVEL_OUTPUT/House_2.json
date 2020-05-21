@@ -1,0 +1,56 @@
+{ "house_2": {
+ "name": "Mutated_House #0",
+ "fitness": -28371650831719084326912.000000,
+ "map": "############\n#......@...#\n#..........#\n#..........#\n#..........#\n#..........#\n#..w.......#\n#g.........#\n#..........#\n#........e.#\n#........[.#\n############\n\nKey\n@ : SIM\ne : bed\ng : fridge\nw : microwave\n[ : toilet\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 0, "y": 6},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "toilet",
+ "position": {"x": 8, "y": 9},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 5,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "bed",
+ "position": {"x": 8, "y": 8},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "microwave",
+ "position": {"x": 2, "y": 5},
+ "needFX": {
+  "hunger": 4,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

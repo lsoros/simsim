@@ -355,11 +355,11 @@ int main(){
 	//simulateTest();
 	//cloneTest();
 	//noveltyTest();
-	jsonTEST();
+	//jsonTEST();
 	//testMut();
 
 // ACTUAL EXPERIMENT
-	//runExp();			//seg faults unless run (still missing initializer function and mutator)
+	runExp();			//seg faults unless run (still missing initializer function and mutator)
 
 	return 1;
 }
@@ -563,16 +563,32 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
 
 //4. dump the rooms to archive
-	ofstream houseFile;
+	
+
+	//show in terminal
 	list<House*>::iterator n;
+	vector<string> houseJsons;
+	vector<string> houseIDs;
+	//int y = 0;
 	for(n=novelHouses.begin();n!=novelHouses.end();n++){
+		//y++;
 		House *nov_house = (*n);
 		cout << "---HOUSE:---\n" << nov_house->asciiRep(charMap) << endl;
 
-		houseFile.open("NOVEL_OUTPUT/House_" + to_string(nov_house->getId()) + ".json");
+		string js = nov_house->toJSON();
+		houseJsons.push_back(js);
+
+		houseIDs.push_back(to_string(nov_house->getId()));
+	}
+
+
+	//dump to JSON
+	ofstream houseFile;
+	int u=0;
+	for(u=0;u<houseJsons.size();u++){
+		houseFile.open("NOVEL_OUTPUT/House_" + houseIDs[u] + ".json");
 		if(houseFile){
-			string js = nov_house->toJSON();
-			houseFile << js << "\n";
+			houseFile << houseJsons[u] << "\n";
 			houseFile.close();
 		}
 		
