@@ -313,8 +313,9 @@ public:
     }     
     
     inline Object* delete_object(int position){
-        Object * obj = objects[position];
-        objects.erase(objects.begin()+position);
+        Object *obj = objects[position];
+        //objects.erase(objects.begin()+position);
+        objects.erase(remove(objects.begin(), objects.end(), obj),objects.end());
         return obj;
     }
 
@@ -332,7 +333,7 @@ public:
 
                 Object* obj = delete_object(i);
                 if(obj != nullptr){
-                    cout << "** DELETED OBJECT **" << endl;
+                    cout << "** DELETED "<< obj->getName() << " **" << endl;
                 }
                 //object obj was deleted
 
@@ -344,7 +345,7 @@ public:
                 bool did_it_happen = move_object(current_obj, new_coordinates);
 
                 if(did_it_happen){
-                    cout << "** MOVED OBJECT " << objects[i]->getName() << " **" << endl;
+                    cout << "** MOVED " << objects[i]->getName() << " **" << endl;
                 }
 
             }
@@ -367,7 +368,7 @@ public:
             bool did_it_happen = place_object(new_object_p, new_coordinates); 
             if(did_it_happen){
                 //cout << "** ADDED OBJECT " << new_object.getName() << " **" << endl; 
-                cout << "** ADDED OBJECT **" << endl; 
+                cout << "** ADDED " << new_object_p << "**" << endl; 
             }  
             
         }

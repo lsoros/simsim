@@ -303,7 +303,7 @@ void testMut(){
 	map<string, char> charMap = makeObjAsciiMap(fullObjList);
 
 	//create house 1
-    Room livingroom("Test Room", {3,3});
+    Room livingroom("Test Room", {10,10});
     House testHouse("Some House", 100);
     testHouse.add_room(livingroom);
    	Object fridge("fridge", fullObjList["fridge"], randPos(livingroom.getDimensions()));
@@ -315,6 +315,9 @@ void testMut(){
 
     cout << "---HOUSE:---\n" << testHouse.asciiRep(charMap) << endl;
 
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
+    livingroom.mutate_objects();
     livingroom.mutate_objects();
     livingroom.mutate_objects();
     livingroom.mutate_objects();
