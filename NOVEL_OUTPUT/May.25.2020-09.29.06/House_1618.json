@@ -1,0 +1,78 @@
+{ "house_1618": {
+ "name": "Mutated_House #0.0.1.2.1.0.0.0.2.0.1.0.2.0.2.2.1.2",
+ "fitness": 0.000000,
+ "map": "############\n#..........#\n#..........#\n#m.........#\n#.ve.....@O#\n#..........#\n#..v.......#\n#.......e..#\n#..........#\n#..........#\n#..........#\n############\n\nKey\n@ : SIM\ne : bed\nO : bookcase\nm : drumset\nv : stove\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "bed",
+ "position": {"x": 7, "y": 6},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "stove",
+ "position": {"x": 2, "y": 5},
+ "needFX": {
+  "hunger": 4,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "stove",
+ "position": {"x": 1, "y": 3},
+ "needFX": {
+  "hunger": 4,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "bed",
+ "position": {"x": 2, "y": 3},
+ "needFX": {
+  "hunger": -1,
+  "hygeine": -1,
+  "bladder": -1,
+  "energy": 3,
+  "social": -1,
+  "fun": -1
+ }
+},
+{ "name": "bookcase",
+ "position": {"x": 9, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 2
+ }
+},
+{ "name": "drumset",
+ "position": {"x": 0, "y": 2},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+}
+  ]
+}
+]
+}}

@@ -1,0 +1,111 @@
+{ "house_2385": {
+ "name": "Mutated_House #0.1.2.0.1.1.1.1.0.1.1.1.0.2.0.1",
+ "fitness": 0.000000,
+ "map": "############\n#..........#\n#...a......#\n#.....:....#\n#......].@.#\n#.......I.t#\n#........U.#\n#........V.#\n#..........#\n#..........#\n#.....g..g.#\n############\n\nKey\n@ : SIM\na : alarm clock\nI : bidet\nU : couch\ng : fridge\nt : guitar\n] : toilet\nV : tv\n: : vending machine\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 8, "y": 9},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "toilet",
+ "position": {"x": 6, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 5,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "couch",
+ "position": {"x": 8, "y": 5},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 1,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "bidet",
+ "position": {"x": 7, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 5,
+  "energy": 0,
+  "social": 0,
+  "fun": 2
+ }
+},
+{ "name": "alarm clock",
+ "position": {"x": 3, "y": 1},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": -1
+ }
+},
+{ "name": "fridge",
+ "position": {"x": 5, "y": 9},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "guitar",
+ "position": {"x": 9, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 1,
+  "fun": 4
+ }
+},
+{ "name": "tv",
+ "position": {"x": 8, "y": 6},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": -1,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 3
+ }
+},
+{ "name": "vending machine",
+ "position": {"x": 5, "y": 2},
+ "needFX": {
+  "hunger": 3,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

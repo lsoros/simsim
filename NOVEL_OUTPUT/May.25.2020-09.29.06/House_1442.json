@@ -1,0 +1,89 @@
+{ "house_1442": {
+ "name": "Mutated_House #0.1.2.0.0.1.1.0.1.0.1.1.0",
+ "fitness": 0.000000,
+ "map": "############\n#..........#\n#..........#\n#..........#\n#.ft.....@.#\n#.x..f.9...#\n#..........#\n#..........#\n#....g.....#\n#...H......#\n#..........#\n############\n\nKey\n@ : SIM\nH : chess table\nf : coffee maker\ng : fridge\nt : guitar\n9 : photo booth\nx : tissue box\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 4, "y": 7},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 4, "y": 4},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "photo booth",
+ "position": {"x": 6, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 4
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 1, "y": 3},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "tissue box",
+ "position": {"x": 1, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 1,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "chess table",
+ "position": {"x": 3, "y": 8},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 2
+ }
+},
+{ "name": "guitar",
+ "position": {"x": 2, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 1,
+  "fun": 4
+ }
+}
+  ]
+}
+]
+}}

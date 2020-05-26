@@ -18,6 +18,35 @@ string vec2str(vector<int>v){
     return str;
 }
 
+tuple<int,int> randPos(tuple<int,int>dimen){
+    return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
+}
+int randVal(tuple<int,int>r){
+    return rand() % (get<1>(r) - get<0>(r)+1) + get<0>(r);
+}
+tuple<int,int> randDim(tuple<int,int>r){
+    return {randVal(r), randVal(r)};
+}
+
+float vecAvg(vector<float>v){
+    float avg = 0;
+    int i;
+    for(i=0;i<v.size();i++){
+        avg += v[i];
+    }
+    return avg/v.size();
+}
+
+float vecBest(vector<float>v){
+    float best=v[0];
+    int i;
+    for(i=0;i<v.size();i++){
+        if(v[i] > best)
+            best = v[i];
+    }
+    return best;
+}
+
 //copy constructors
 Object::Object(const Object& o){
     name = o.getName();
@@ -493,14 +522,5 @@ string Object::toJSON(){
     return json;
 }
 
-tuple<int,int> randPos(tuple<int,int>dimen){
-    return {(rand() % get<0>(dimen)), (rand() % get<1>(dimen))};
-}
-int randVal(tuple<int,int>r){
-    return rand() % (get<1>(r) - get<0>(r)+1) + get<0>(r);
-}
-tuple<int,int> randDim(tuple<int,int>r){
-    return {randVal(r), randVal(r)};
-}
 
 

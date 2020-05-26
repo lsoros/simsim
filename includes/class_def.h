@@ -8,6 +8,10 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
+#include <sstream>
+#include <ctime>
+#include <sys/stat.h>
+#include <sys/types.h>
 using namespace std;
 
 extern bool SHOW_DEBUG;
@@ -23,11 +27,14 @@ class Sim;
 //global functions
 map<string, vector<int>> getfullObjList();  //retrieves the object list in the format [name, fx]
 map<string, char> makeObjAsciiMap(map<string, vector<int>> fullObjList);        //ascii representation for the object list in the form [name, ascii_rep]
-string tup2str(tuple<int,int>t);
-string vec2str(vector<int>v);
-tuple<int,int> randPos(tuple<int,int>dimen);        //random position within dimensions
-int randVal(tuple<int,int>r);            //random number between x and y
-tuple<int,int> randDim(tuple<int,int>r);            //random dimensions between x and y
+
+string tup2str(tuple<int,int>t);                //converts tuple of ints to a string
+string vec2str(vector<int>v);                   //converts vector of ints to a string
+tuple<int,int> randPos(tuple<int,int>dimen);    //random position within dimensions
+int randVal(tuple<int,int>r);                   //random number between x and y
+tuple<int,int> randDim(tuple<int,int>r);        //random dimensions between x and y
+float vecAvg(vector<float>v);                   //returns average value from a vector of floats
+float vecBest(vector<float>v);                  //return best value from a vector of floats
 
 //////////////////     CLASS DEFINITIONS     ///////////////////
 

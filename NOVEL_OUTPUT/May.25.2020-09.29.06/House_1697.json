@@ -1,0 +1,111 @@
+{ "house_1697": {
+ "name": "Mutated_House #0.1.2.0.0.1.1.0.1.0.1.1.0.0.0.0",
+ "fitness": 0.000000,
+ "map": "############\n#.........l#\n#...f......#\n#..........#\n#.f.S....@.#\n#.xt.......#\n#.g......s.#\n#..........#\n#.....H....#\n#..........#\n#..........#\n############\n\nKey\n@ : SIM\nH : chess table\nf : coffee maker\nl : doll house\ns : easel\nS : fish bowl\ng : fridge\nt : guitar\nx : tissue box\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 1, "y": 5},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 3, "y": 1},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 1, "y": 3},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "tissue box",
+ "position": {"x": 1, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 1,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "chess table",
+ "position": {"x": 5, "y": 7},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 2
+ }
+},
+{ "name": "guitar",
+ "position": {"x": 2, "y": 4},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 1,
+  "fun": 4
+ }
+},
+{ "name": "doll house",
+ "position": {"x": 9, "y": 0},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "fish bowl",
+ "position": {"x": 3, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "easel",
+ "position": {"x": 8, "y": 5},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 3
+ }
+}
+  ]
+}
+]
+}}

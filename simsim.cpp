@@ -345,6 +345,127 @@ void testMut(){
 	*/
 }
 
+void initMutTimeTest(){
+
+	cout << "Making init house" << endl;
+	//starter house
+	int houseIdIndex = 1;
+	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
+	houseIdIndex++;
+
+	Room r("Experiment Room");
+    initHouse.add_room(r);
+
+    map<string, vector<int>> fullObjList = getfullObjList();
+    map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	Object fridge("fridge", fullObjList["fridge"], randPos(r.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(r.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(r.getDimensions()));
+	r.add_object(fridge);
+    r.add_object(toilet);
+    r.add_object(bed);
+
+    
+
+	int _popsize = 1000;
+	vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
+	int _maxticks = 100;
+
+
+	cout << "Making " << to_string(_popsize) << " mutated houses and simulating..." << endl;
+	list<House *> population;
+	int i;
+	for(i=0;i<_popsize;i++){
+		//mutate from the initial house
+		House *mutHouse = new House(initHouse);
+		mutHouse->setId(houseIdIndex);
+		mutHouse->setName("Mutated_House #" + to_string(i));
+		vector<Room *> rooms = mutHouse->getRooms();
+		int r;
+		for(r=0;r<rooms.size();r++){
+			rooms[r]->mutate_objects();			//function from the mutationsbranch (will be merged later)
+		}
+
+		//add to the population
+		population.push_back(mutHouse);
+
+		//increment index
+		houseIdIndex++;
+
+		//run fitness
+		Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
+		mutHouse->getRooms()[0]->placeSim(testSim);
+		tuple<int, int> newXY = randPos(testSim.getRoom()->getDimensions());
+		testSim.changeCoordinates(newXY);
+
+		simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
+
+	}
+
+	cout << "DONE!" << endl;
+}
+
+void randGenExp(){
+	int _popsize = 30;
+	vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
+	int _maxticks = 100;
+	int _generations = 100;
+	int curGen = 0;
+
+	//starter house
+	int houseIdIndex = 1;
+	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
+	houseIdIndex++;
+
+	Room r("Experiment Room");
+    initHouse.add_room(r);
+
+    map<string, vector<int>> fullObjList = getfullObjList();
+    map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	Object fridge("fridge", fullObjList["fridge"], randPos(r.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(r.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(r.getDimensions()));
+	r.add_object(fridge);
+    r.add_object(toilet);
+    r.add_object(bed);
+
+    //generate random populations from then on
+    while(curGen < _generations){
+		int i;
+		vector<float> fitnessSet;
+		for(i=0;i<_popsize;i++){
+			//mutate from the initial house
+			House *mutHouse = new House(initHouse);
+			mutHouse->setId(houseIdIndex);
+			mutHouse->setName("Mutated_House #" + to_string(i));
+			vector<Room *> rooms = mutHouse->getRooms();
+			int r;
+			for(r=0;r<rooms.size();r++){
+				rooms[r]->mutate_objects();			//function from the mutationsbranch (will be merged later)
+			}
+
+			//increment index
+			houseIdIndex++;
+
+			//run fitness
+			Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
+			mutHouse->getRooms()[0]->placeSim(testSim);
+			tuple<int, int> newXY = randPos(testSim.getRoom()->getDimensions());
+			testSim.changeCoordinates(newXY);
+
+			float fitness = simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
+			fitnessSet.push_back(fitness);
+		}
+
+		cout << to_string(curGen+1) << "," << vecAvg(fitnessSet) << "," << vecBest(fitnessSet) << endl;
+		curGen++;
+	}
+}
+
 
 int main(){
 	srand((unsigned) time(0));
@@ -357,6 +478,10 @@ int main(){
 	//noveltyTest();
 	//jsonTEST();
 	//testMut();
+
+//EXPERIMENT TEST FUNCTIONS
+	//initMutTimeTest();
+	//randGenExp();
 
 // ACTUAL EXPERIMENT
 	runExp();			//seg faults unless run (still missing initializer function and mutator)
@@ -376,7 +501,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 	///////    PARAMETERS  //////
 	int _popsize = 30;
-	int _generations = 10;
+	int _generations = 100;
 	/*
 	float _mut_add_prob = 0.3;
 	float _mut_delete_prob = 0.1;
@@ -440,11 +565,12 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 //3. While curGen < generations
 	while(curGen < _generations){
-		cout << "-- GENERATION: " << curGen << " --" << endl;
+			//cout << "-- GENERATION: " << curGen << " --" << endl;
 
 		//3.5 i'm assuming the simulation would go somewhere here followed by novelty assignment
 			//cout << " ...simulating" << endl;
 		list<House *>::iterator h;
+		vector<float> fitnessSet;
 		for(h=population.begin();h != population.end();h++){
 			House *popHouse = (*h);
 
@@ -458,14 +584,17 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 			testSim.changeCoordinates(newXY);
 
 			float fitness = simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
+			fitnessSet.push_back(fitness);
 				
 
 			bool foundNovelHouse = isNovel(novelHouses, popHouse, fitness);
-			cout << popHouse->getId() << " = " << fitness << " -> "  << foundNovelHouse << endl;
+				//cout << popHouse->getId() << " = " << fitness << " -> "  << foundNovelHouse << endl;
 			if(foundNovelHouse)
 				novelHouses.push_back(popHouse);
 			
 		}
+
+		cout << to_string(curGen+1) << "," << vecAvg(fitnessSet) << "," << vecBest(fitnessSet) << endl;
 
 		//a. create an empty list for the next generation's population
 		list<House *> newPop;			
@@ -569,11 +698,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	list<House*>::iterator n;
 	vector<string> houseJsons;
 	vector<string> houseIDs;
-	//int y = 0;
 	for(n=novelHouses.begin();n!=novelHouses.end();n++){
-		//y++;
 		House *nov_house = (*n);
-		cout << "---HOUSE:---\n" << nov_house->asciiRep(charMap) << endl;
+		cout << "---HOUSE: " << nov_house->getId() << "---\n" << nov_house->asciiRep(charMap) << endl;
 
 		string js = nov_house->toJSON();
 		houseJsons.push_back(js);
@@ -581,12 +708,27 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		houseIDs.push_back(to_string(nov_house->getId()));
 	}
 
+	//make sub-directory
+	time_t curr_time;
+	tm * curr_tm;
+	time(&curr_time);
+	curr_tm = localtime(&curr_time);
+	char time_str[50];
+	strftime(time_str, 50, "%b.%d.%Y-%I.%M.%S",curr_tm);
+
+	string subDir = "NOVEL_OUTPUT/";
+	subDir += time_str;
+
+	cout << subDir << endl;
+
+	mkdir(subDir.c_str(), 0777);
 
 	//dump to JSON
 	ofstream houseFile;
 	int u=0;
 	for(u=0;u<houseJsons.size();u++){
-		houseFile.open("NOVEL_OUTPUT/House_" + houseIDs[u] + ".json");
+		string jfile = (subDir + "/House_" + houseIDs[u] + ".json");
+		houseFile.open(jfile);
 		if(houseFile){
 			houseFile << houseJsons[u] << "\n";
 			houseFile.close();

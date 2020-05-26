@@ -1,0 +1,144 @@
+{ "house_2419": {
+ "name": "Mutated_House #0.1.2.0.0.1.1.1.0.0.1.0.1.1.0.0.1.2",
+ "fitness": -2396594970814689084712059137949696.000000,
+ "map": "############\n#..........#\n#......7..g#\n#....6.....#\n#........@.#\n#.......f..#\n#.........1#\n#P9......b.#\n#H.....K...#\n#......;...#\n#R.........#\n############\n\nKey\n@ : SIM\nb : backpack\nH : chess table\nf : coffee maker\nR : dresser\ng : fridge\n1 : high chair\nP : lamp\nK : makeup box\n6 : night stand\n7 : painting\n9 : photo booth\n; : video game console\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "fridge",
+ "position": {"x": 9, "y": 1},
+ "needFX": {
+  "hunger": 5,
+  "hygeine": 0,
+  "bladder": -1,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "photo booth",
+ "position": {"x": 1, "y": 6},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 4
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 7, "y": 4},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "painting",
+ "position": {"x": 6, "y": 1},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "video game console",
+ "position": {"x": 6, "y": 8},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": -1,
+  "social": 2,
+  "fun": 5
+ }
+},
+{ "name": "lamp",
+ "position": {"x": 0, "y": 6},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "backpack",
+ "position": {"x": 8, "y": 6},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "dresser",
+ "position": {"x": 0, "y": 9},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "chess table",
+ "position": {"x": 0, "y": 7},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 2,
+  "fun": 2
+ }
+},
+{ "name": "night stand",
+ "position": {"x": 4, "y": 2},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "high chair",
+ "position": {"x": 9, "y": 5},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "makeup box",
+ "position": {"x": 6, "y": 7},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

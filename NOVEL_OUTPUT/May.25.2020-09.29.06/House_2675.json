@@ -1,0 +1,100 @@
+{ "house_2675": {
+ "name": "Mutated_House #0.0.1.2.1.0.0.0.2.0.2.1.1.0.1.1.0.0.0",
+ "fitness": -2416170516655908802999038989303808.000000,
+ "map": "############\n#..........#\n#..........#\n#..........#\n#........@*#\n#..........#\n#.........V#\n#....v.f..c#\n#..........#\n#..........#\n#...... r..#\n############\n\nKey\n@ : SIM\nb : backpack\nc : calculator\nf : coffee maker\nr : crib\n  : food bowl\n* : sink\nv : stove\nV : tv\n",
+  "rooms": [
+{ "name": "Experiment Room",
+ "dimensions": {"x": 10, "y": 10},
+ "objects": [
+{ "name": "stove",
+ "position": {"x": 4, "y": 6},
+ "needFX": {
+  "hunger": 4,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 1
+ }
+},
+{ "name": "calculator",
+ "position": {"x": 9, "y": 6},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "backpack",
+ "position": {"x": 8, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "food bowl",
+ "position": {"x": 6, "y": 9},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "coffee maker",
+ "position": {"x": 6, "y": 6},
+ "needFX": {
+  "hunger": 2,
+  "hygeine": 0,
+  "bladder": -3,
+  "energy": 3,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "crib",
+ "position": {"x": 7, "y": 9},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 0,
+  "bladder": 0,
+  "energy": 5,
+  "social": 0,
+  "fun": 0
+ }
+},
+{ "name": "tv",
+ "position": {"x": 9, "y": 5},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": -1,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 3
+ }
+},
+{ "name": "sink",
+ "position": {"x": 9, "y": 3},
+ "needFX": {
+  "hunger": 0,
+  "hygeine": 2,
+  "bladder": 0,
+  "energy": 0,
+  "social": 0,
+  "fun": 0
+ }
+}
+  ]
+}
+]
+}}

@@ -68,3 +68,4 @@ food bowl, 0,0,0,0,0,0
 incense, 0,0,0,0,0,1
 _clock, 0,0,0,0,0,0
 calculator, 0,0,0,0,0,0
+bidet, 0,0,5,0,0,2
