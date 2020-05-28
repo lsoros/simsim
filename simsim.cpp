@@ -562,6 +562,8 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 
 
 	list<House *>novelHouses;
+	list<House *>deadHouses;
+	list<House *>bestHouses;
 
 //3. While curGen < generations
 	while(curGen < _generations){
@@ -571,6 +573,10 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 			//cout << " ...simulating" << endl;
 		list<House *>::iterator h;
 		vector<float> fitnessSet;
+
+		House *bestHouse;
+		float bestFit = 0;
+
 		for(h=population.begin();h != population.end();h++){
 			House *popHouse = (*h);
 
@@ -591,8 +597,20 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 				//cout << popHouse->getId() << " = " << fitness << " -> "  << foundNovelHouse << endl;
 			if(foundNovelHouse)
 				novelHouses.push_back(popHouse);
+
+			//save any zero fitness houses
+			if(fitness == 0)
+				deadHouses.push_back(popHouse);
+
+			if(fitness > bestFit){
+				bestFit = fitness;
+				bestHouse = (*h);
+			}
 			
 		}
+
+		if(bestHouse != nullptr)
+			bestHouses.push_back(bestHouse);
 
 		cout << to_string(curGen+1) << "," << vecAvg(fitnessSet) << "," << vecBest(fitnessSet) << endl;
 
@@ -692,7 +710,6 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
 
 //4. dump the rooms to archive
-	
 
 	//show in terminal
 	list<House*>::iterator n;
@@ -708,6 +725,34 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		houseIDs.push_back(to_string(nov_house->getId()));
 	}
 
+	cout << "*** DEAD HOUSE DUMP (" << deadHouses.size() << ") ***" << endl;
+
+	vector<string> houseJsons2;
+	vector<string> houseIDs2;
+	for(n=deadHouses.begin();n!=deadHouses.end();n++){
+		House *dead_house = (*n);
+		//cout << "---HOUSE: " << dead_house->getId() << "---\n" << dead_house->asciiRep(charMap) << endl;
+
+		string js = dead_house->toJSON();
+		houseJsons2.push_back(js);
+
+		houseIDs2.push_back(to_string(dead_house->getId()));
+	}
+
+	cout << "*** BEST HOUSE DUMP (" << bestHouses.size() << ") ***" << endl;
+
+	vector<string> houseJsons3;
+	vector<string> houseIDs3;
+	for(n=bestHouses.begin();n!=bestHouses.end();n++){
+		House *best_house = (*n);
+		//cout << "---HOUSE: " << best_house->getId() << "---\n" << best_house->asciiRep(charMap) << endl;
+
+		string js = best_house->toJSON();
+		houseJsons3.push_back(js);
+
+		houseIDs3.push_back(to_string(best_house->getId()));
+	}
+
 	//make sub-directory
 	time_t curr_time;
 	tm * curr_tm;
@@ -716,12 +761,22 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	char time_str[50];
 	strftime(time_str, 50, "%b.%d.%Y-%I.%M.%S",curr_tm);
 
+
+//make subdirectories
 	string subDir = "NOVEL_OUTPUT/";
 	subDir += time_str;
-
 	cout << subDir << endl;
-
 	mkdir(subDir.c_str(), 0777);
+
+	string subDir2 = "DEAD_OUTPUT/";
+	subDir2 += time_str;
+	cout << subDir2 << endl;
+	mkdir(subDir2.c_str(), 0777);
+
+	string subDir3 = "BEST_OUTPUT/";
+	subDir3 += time_str;
+	cout << subDir3 << endl;
+	mkdir(subDir3.c_str(), 0777);
 
 	//dump to JSON
 	ofstream houseFile;
@@ -735,8 +790,26 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		}
 		
 	}
+
+	for(u=0;u<houseJsons2.size();u++){
+		string jfile = (subDir2 + "/House_" + houseIDs2[u] + ".json");
+		houseFile.open(jfile);
+		if(houseFile){
+			houseFile << houseJsons2[u] << "\n";
+			houseFile.close();
+		}
+		
+	}
 	
-	
+	for(u=0;u<houseJsons3.size();u++){
+		string jfile = (subDir3 + "/House_" + houseIDs3[u] + ".json");
+		houseFile.open(jfile);
+		if(houseFile){
+			houseFile << houseJsons3[u] << "\n";
+			houseFile.close();
+		}
+		
+	}
 
 
 
