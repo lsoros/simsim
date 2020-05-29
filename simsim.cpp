@@ -564,6 +564,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	list<House *>novelHouses;
 	list<House *>deadHouses;
 	list<House *>bestHouses;
+	vector<string> genStats;
 
 //3. While curGen < generations
 	while(curGen < _generations){
@@ -612,7 +613,10 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		if(bestHouse != nullptr)
 			bestHouses.push_back(bestHouse);
 
-		cout << to_string(curGen+1) << "," << vecAvg(fitnessSet) << "," << vecBest(fitnessSet) << endl;
+		string gs = (to_string(curGen+1) + "," + to_string(vecAvg(fitnessSet)) + "," + to_string(vecBest(fitnessSet)));
+		cout << gs << endl;
+		genStats.push_back(gs);
+
 
 		//a. create an empty list for the next generation's population
 		list<House *> newPop;			
@@ -762,24 +766,42 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	strftime(time_str, 50, "%b.%d.%Y-%I.%M.%S",curr_tm);
 
 
+	string bigDir = "OUTPUT_[";
+	bigDir += time_str;
+	bigDir += "]";
+	mkdir(bigDir.c_str(), 0777);
+
 //make subdirectories
-	string subDir = "NOVEL_OUTPUT/";
-	subDir += time_str;
+	string subDir = bigDir + "/NOVEL_OUTPUT/";
 	cout << subDir << endl;
 	mkdir(subDir.c_str(), 0777);
 
-	string subDir2 = "DEAD_OUTPUT/";
-	subDir2 += time_str;
+	string subDir2 = bigDir + "/DEAD_OUTPUT/";
 	cout << subDir2 << endl;
 	mkdir(subDir2.c_str(), 0777);
 
-	string subDir3 = "BEST_OUTPUT/";
-	subDir3 += time_str;
+	string subDir3 = bigDir + "/BEST_OUTPUT/";
 	cout << subDir3 << endl;
 	mkdir(subDir3.c_str(), 0777);
 
-	//dump to JSON
+
+
+	//dump generation stats
 	ofstream houseFile;
+	string statfile = (bigDir + "/genStats.csv");
+	houseFile.open(statfile);
+	houseFile << "Generation, Average Fitness, Best Fitness" << "\n";
+	int gi = 0;
+	for(gi=0;gi<genStats.size();gi++){
+		if(houseFile){
+			houseFile << genStats[gi] << "\n";	
+		}
+	}
+	houseFile.close();
+
+
+	//dump to JSON
+	
 	int u=0;
 	for(u=0;u<houseJsons.size();u++){
 		string jfile = (subDir + "/House_" + houseIDs[u] + ".json");
