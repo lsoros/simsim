@@ -1,6 +1,7 @@
 #include "includes/simsim_func.h"
 
-void runExp();
+void runNovExp();
+void runEAExp();
 
 ////////////////////////////////
 //   TESTER EXPERIMENT CODE   //
@@ -484,7 +485,8 @@ int main(){
 	//randGenExp();
 
 // ACTUAL EXPERIMENT
-	runExp();			//seg faults unless run (still missing initializer function and mutator)
+	//runNovExp();			//novelty experiment
+	runEAExp();				//hillckimber experiment
 
 	return 1;
 }
@@ -497,7 +499,7 @@ int main(){
 ///////////////////////////////////
 
 
-void runExp(){		//feel like some kind of arguments should go here; maybe file input?
+void runNovExp(){		//feel like some kind of arguments should go here; maybe file input?
 
 	///////    PARAMETERS  //////
 	int _popsize = 100;
@@ -889,4 +891,145 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	return;
 }
 
+
+void runEAExp(){		//feel like some kind of arguments should go here; maybe file input?
+
+	///////    PARAMETERS  //////
+	int _generations = 1000;
+	/*
+	float _mut_add_prob = 0.3;
+	float _mut_delete_prob = 0.1;
+	float _mut_move_prob = 0.4;
+	*/
+
+	int curGen = 0;
+
+	int _maxticks = 100;
+	//needs order: hunger, hygeine, bladder, energy, social, fun
+	vector<int> decNeedRate{5,10,5,7,15,15};
+	vector<int> needsRanking{2,0,3,1,4,5};
+
+//1. initial seed generation code 
+	/* WRITE INIT CODE HERE */
+	int houseIdIndex = 1;
+	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
+	houseIdIndex++;
+
+	Room r("Experiment Room",{7,7});
+    initHouse.add_room(r);
+
+    map<string, vector<int>> fullObjList = getfullObjList();
+    map<string, char> charMap = makeObjAsciiMap(fullObjList);
+
+	Object fridge("fridge", fullObjList["fridge"], randPos(r.getDimensions()));
+    Object toilet("toilet", fullObjList["toilet"], randPos(r.getDimensions()));
+    Object bed("bed", fullObjList["bed"], randPos(r.getDimensions()));
+	r.add_object(fridge);
+    r.add_object(toilet);
+    r.add_object(bed);
+
+    //evaluate the initial house
+    Sim testSim("Foo Bar");		//make a new sim everytime to reset needs
+	initHouse.getRooms()[0]->placeSim(testSim);
+	tuple<int, int> newXY = randPos(testSim.getRoom()->getDimensions());
+	testSim.changeCoordinates(newXY);
+
+	float fitness = simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
+	initHouse.setFitness(fitness);
+	initHouse.getRooms()[0]->removeSim(&testSim);
+
+
+	//set best fit house as initial
+	House *bestHouse;
+	float bestFitness = 0;
+	bestHouse = &initHouse;
+	bestFitness = initHouse.getFitness();
+
+	//start the generation
+	vector<string> genStats;
+	
+
+	while(curGen < _generations){
+
+		float parFit = bestFitness;
+
+		//create a child from the best fit house
+		House *childHouse = new House(*bestHouse);
+		childHouse->setId(houseIdIndex);
+		childHouse->setName("Mutated_House #" + to_string(curGen) + "2");
+		vector<Room *> rooms2 = childHouse->getRooms();
+		int r2;
+		for(r2=0;r2<rooms2.size();r2++){
+			rooms2[r2]->mutate_objects();			//function from the mutationsbranch (will be merged later)
+		}
+
+		//evaluate the child
+		Sim testSim2("Foo Bar Jr");		//make a new sim everytime to reset needs
+		childHouse->getRooms()[0]->placeSim(testSim2);
+		tuple<int, int> newXY2 = randPos(testSim2.getRoom()->getDimensions());
+		testSim2.changeCoordinates(newXY2);
+
+		float fitness2 = simulate(&testSim2, _maxticks, decNeedRate, 3, needsRanking);
+		childHouse->setFitness(fitness2);
+		childHouse->getRooms()[0]->removeSim(&testSim2);
+
+		//cout << "---HOUSE (" << fitness2 << "): ---\n" << childHouse->asciiRep(charMap) << endl;
+
+
+		//replace the best set if the child is better
+		if(fitness2 > bestFitness){
+			bestHouse = childHouse;
+			bestFitness = fitness2;
+		}
+
+		//print generation stats
+		string gs = (to_string(curGen+1) + "," + to_string(parFit) + "," + to_string(bestFitness));
+		cout << gs << endl;
+		genStats.push_back(gs);
+
+		curGen++;
+	}
+
+
+	cout << "--- BEST FIT HOUSE ( " << bestHouse->getFitness() << "): ---\n" << bestHouse->asciiRep(charMap) << endl;
+
+
+	//make sub-directory
+	time_t curr_time;
+	tm * curr_tm;
+	time(&curr_time);
+	curr_tm = localtime(&curr_time);
+	char time_str[50];
+	strftime(time_str, 50, "%b.%d.%Y-%I.%M.%S",curr_tm);
+
+
+	string bigDir = "OUTPUT_[";
+	bigDir += time_str;
+	bigDir += "]";
+	mkdir(bigDir.c_str(), 0777);
+
+	//dump generation stats
+	ofstream houseFile;
+	string statfile = (bigDir + "/genStats.csv");
+	houseFile.open(statfile);
+	houseFile << "Generation, Average Fitness, Best Fitness" << "\n";
+	int gi = 0;
+	for(gi=0;gi<genStats.size();gi++){
+		if(houseFile){
+			houseFile << genStats[gi] << "\n";	
+		}
+	}
+	houseFile.close();
+
+	//dump best house 
+	string jfile = (bigDir + "/Best_House.json");
+	houseFile.open(jfile);
+	if(houseFile){
+		houseFile << "---HOUSE: " << bestHouse->getId() << "---\n" << bestHouse->asciiRep(charMap) << "\n";
+		houseFile.close();
+	}
+
+
+	return;
+}
 
