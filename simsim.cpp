@@ -500,8 +500,8 @@ int main(){
 void runExp(){		//feel like some kind of arguments should go here; maybe file input?
 
 	///////    PARAMETERS  //////
-	int _popsize = 30;
-	int _generations = 100;
+	int _popsize = 100;
+	int _generations = 1000;
 	/*
 	float _mut_add_prob = 0.3;
 	float _mut_delete_prob = 0.1;
@@ -521,7 +521,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	House initHouse("Laboratory",houseIdIndex);		//experiments done in labs :)
 	houseIdIndex++;
 
-	Room r("Experiment Room");
+	Room r("Experiment Room",{7,7});
     initHouse.add_room(r);
 
     map<string, vector<int>> fullObjList = getfullObjList();
@@ -566,6 +566,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 	list<House *>bestHouses;
 	vector<string> genStats;
 
+	float bestFitnessGlobal = 0;
+	House *bestFitHouse;
+
 //3. While curGen < generations
 	while(curGen < _generations){
 			//cout << "-- GENERATION: " << curGen << " --" << endl;
@@ -575,13 +578,15 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		list<House *>::iterator h;
 		vector<float> fitnessSet;
 
+		bool savedDeadHouse = false;
+
 		House *bestHouse;
 		float bestFit = 0;
 
 		for(h=population.begin();h != population.end();h++){
 			House *popHouse = (*h);
 
-				//cout << "---HOUSE:---\n" << popHouse->asciiRep(charMap) << endl;
+				//cout << "---HOUSE:---\n" << popHouse->asc iiRep(charMap) << endl;
 				
 
 			
@@ -600,12 +605,19 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 				novelHouses.push_back(popHouse);
 
 			//save any zero fitness houses
-			if(fitness == 0)
+			if(fitness == 0 && !savedDeadHouse){
 				deadHouses.push_back(popHouse);
+				savedDeadHouse = true;
+			}
 
 			if(fitness > bestFit){
 				bestFit = fitness;
 				bestHouse = (*h);
+			}
+
+			if(fitness > bestFitnessGlobal){
+				bestFitnessGlobal = fitness;
+				bestFitHouse = (*h);
 			}
 			
 		}
@@ -613,7 +625,7 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		if(bestHouse != nullptr)
 			bestHouses.push_back(bestHouse);
 
-		string gs = (to_string(curGen+1) + "," + to_string(vecAvg(fitnessSet)) + "," + to_string(vecBest(fitnessSet)));
+		string gs = (to_string(curGen+1) + "," + to_string(vecAvg(fitnessSet)) + "," + to_string(vecBest(fitnessSet))) + "," + to_string(novelHouses.size());
 		cout << gs << endl;
 		genStats.push_back(gs);
 
@@ -665,15 +677,47 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 			//House *curHouse = parentSet.front();
 			
 				//cout << to_string(i) << endl;
+				//cout << "size: " << parentSet.size() << endl;
 
 			int m;
 			for(m=0;m<3;m++){
+
+				//if nothing left just copy the initial house again
+				if(parentSet.size() <= 0){
+					//copy
+					House *noobHouse2 = new House(initHouse);
+					noobHouse2->setId(houseIdIndex);
+					noobHouse2->setName(noobHouse2->getName() + "." + to_string(m));
+
+					//cout << "  cool " << endl;
+
+					//mutate
+					int r;
+					vector<Room *>noobRooms = noobHouse2->getRooms();
+					for(r=0;r<noobRooms.size();r++){
+						noobRooms[r]->mutate_objects();
+					}
+					
+					//cout << "  great " << endl;
+
+					//add
+					newPop.push_back(noobHouse2);
+
+					//increment counter
+					houseIdIndex++;
+
+					continue;
+
+				}
+
+ 
 				//copy
 				House *noobHouse = new House(*(parentSet.front()));
 				noobHouse->setId(houseIdIndex);
 				noobHouse->setName(noobHouse->getName() + "." + to_string(m));
 
-				
+				//cout << "  cool " << endl;
+
 				//mutate
 				int r;
 				vector<Room *>noobRooms = noobHouse->getRooms();
@@ -681,15 +725,19 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 					noobRooms[r]->mutate_objects();
 				}
 				
+				//cout << "  great " << endl;
 
 				//add
 				newPop.push_back(noobHouse);
 
 				//increment counter
 				houseIdIndex++;
+
+				//cout << "  awesome " << endl;
 			}
 			
-			parentSet.pop_front();
+			if(parentSet.size() > 0)
+				parentSet.pop_front();
 
 				//cout << "next parent" << endl;
 		}
@@ -709,6 +757,9 @@ void runExp(){		//feel like some kind of arguments should go here; maybe file in
 		//f. iterate otherwise press F to pay respects to your machine
 		curGen++;						
 	}
+
+	cout << "*** BEST FIT HOUSE (" << to_string(bestFitnessGlobal) << ")***" << endl;
+	cout << "---HOUSE: " << bestFitHouse->getId() << "---\n" << bestFitHouse->asciiRep(charMap) << endl;
 
 
 	cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
