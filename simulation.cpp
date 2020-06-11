@@ -1,5 +1,4 @@
 //simulation for the SIM living in a build house
-//code by Milk
 #include "includes/simsim_func.h"
 
 bool debug = false;
@@ -40,9 +39,7 @@ class Node{
 
 //simulates a sim living in a house
 //input: 
-//	Sim* sims 					: array of sims to simulate on
-//  int numSims					: number of sims in the array [sims]
-//	House house 				: the house to simulate in
+//	Sim* simChar 				: sim to simulate on
 //	int maxTicks 				: the number of ticks to simulate for - at the end returns the end state of the sim
 //	vector<int> rate			: how often to decrease the energy levels ( applies to the vector needs accordingly )
 //	int threshold				: the value sim starts to attend to needs (i.e. when bladder reaches 3 - search for toilet)

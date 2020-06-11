@@ -485,8 +485,8 @@ int main(){
 	//randGenExp();
 
 // ACTUAL EXPERIMENT
-	//runNovExp();			//novelty experiment
-	runEAExp();				//hillckimber experiment
+	runNovExp();			//novelty experiment
+	//runEAExp();				//hillckimber experiment
 
 	return 1;
 }
@@ -599,6 +599,8 @@ void runNovExp(){		//feel like some kind of arguments should go here; maybe file
 
 			float fitness = simulate(&testSim, _maxticks, decNeedRate, 3, needsRanking);
 			fitnessSet.push_back(fitness);
+			popHouse->setFitness(fitness);
+			popHouse->getRooms()[0]->removeSim(&testSim);
 				
 
 			bool foundNovelHouse = isNovel(novelHouses, popHouse, fitness);
@@ -763,8 +765,10 @@ void runNovExp(){		//feel like some kind of arguments should go here; maybe file
 	cout << "*** BEST FIT HOUSE (" << to_string(bestFitnessGlobal) << ")***" << endl;
 	cout << "---HOUSE: " << bestFitHouse->getId() << "---\n" << bestFitHouse->asciiRep(charMap) << endl;
 
+	cout << "*** LAST NOVEL HOUSE(" << to_string((novelHouses.back())->getFitness()) << ")***" << endl;
+	cout << "---HOUSE: " << (novelHouses.back())->getId() << "---\n" << (novelHouses.back())->asciiRep(charMap) << endl;
 
-	cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
+	//cout << "*** NOVELTY HOUSE DUMP (" << novelHouses.size() << ") ***" << endl;
 
 //4. dump the rooms to archive
 
@@ -774,7 +778,7 @@ void runNovExp(){		//feel like some kind of arguments should go here; maybe file
 	vector<string> houseIDs;
 	for(n=novelHouses.begin();n!=novelHouses.end();n++){
 		House *nov_house = (*n);
-		cout << "---HOUSE: " << nov_house->getId() << "---\n" << nov_house->asciiRep(charMap) << endl;
+		//cout << "---HOUSE: " << nov_house->getId() << "---\n" << nov_house->asciiRep(charMap) << endl;
 
 		string js = nov_house->toJSON();
 		houseJsons.push_back(js);
@@ -843,7 +847,7 @@ void runNovExp(){		//feel like some kind of arguments should go here; maybe file
 	ofstream houseFile;
 	string statfile = (bigDir + "/genStats.csv");
 	houseFile.open(statfile);
-	houseFile << "Generation, Average Fitness, Best Fitness" << "\n";
+	houseFile << "Generation, Average Fitness, Best Fitness, # Novel Houses" << "\n";
 	int gi = 0;
 	for(gi=0;gi<genStats.size();gi++){
 		if(houseFile){
@@ -895,7 +899,7 @@ void runNovExp(){		//feel like some kind of arguments should go here; maybe file
 void runEAExp(){		//feel like some kind of arguments should go here; maybe file input?
 
 	///////    PARAMETERS  //////
-	int _generations = 1000;
+	int _generations = 50000;
 	/*
 	float _mut_add_prob = 0.3;
 	float _mut_delete_prob = 0.1;
@@ -1012,7 +1016,7 @@ void runEAExp(){		//feel like some kind of arguments should go here; maybe file 
 	ofstream houseFile;
 	string statfile = (bigDir + "/genStats.csv");
 	houseFile.open(statfile);
-	houseFile << "Generation, Average Fitness, Best Fitness" << "\n";
+	houseFile << "Generation, Parent Fitness, Best Fitness" << "\n";
 	int gi = 0;
 	for(gi=0;gi<genStats.size();gi++){
 		if(houseFile){
@@ -1022,7 +1026,7 @@ void runEAExp(){		//feel like some kind of arguments should go here; maybe file 
 	houseFile.close();
 
 	//dump best house 
-	string jfile = (bigDir + "/Best_House.json");
+	string jfile = (bigDir + "/Best_House.txt");
 	houseFile.open(jfile);
 	if(houseFile){
 		houseFile << "---HOUSE: " << bestHouse->getId() << "---\n" << bestHouse->asciiRep(charMap) << "\n";
