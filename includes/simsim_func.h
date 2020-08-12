@@ -17,7 +17,7 @@ float simulate(Sim* simChar, int maxTicks, vector<int> rate, int threshold, vect
 
 
 ////// NOVELTY.CPP CODE ////////
-const float MINIMUM_SIM_FITNESS_CRITERIA = 0.0;
+const float MINIMUM_SIM_FITNESS_CRITERIA = 0.2;
 const float MINIMUM_NOVEL_DISTANCE = 3.0;
 const int K_VALUE = 10;
 

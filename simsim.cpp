@@ -468,7 +468,7 @@ void randGenExp(){
 }
 
 
-int main(){
+int main(int argc, char* argv[]){
 	srand((unsigned) time(0));
 
 // TEST FUNCTIONS 
@@ -485,8 +485,14 @@ int main(){
 	//randGenExp();
 
 // ACTUAL EXPERIMENT
-	runNovExp();			//novelty experiment
-	//runEAExp();				//hillckimber experiment
+	if(argc > 1 && strcmp(argv[1],"hillclimber") == 0){
+		cout << "** RUNNING HILLCLIMBER EXPERIMENT **" << endl;
+		runEAExp();				//hillclimber experiment
+	}else{
+		cout << "** RUNNING NOVELTY SEARCH EXPERIMENT **" << endl;
+		runNovExp();			//novelty experiment
+	}
+	
 
 	return 1;
 }
