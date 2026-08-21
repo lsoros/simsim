@@ -1,5 +1,7 @@
 # simsim
 
+See the full paper here: https://arxiv.org/abs/2008.11258
+
 ## INSTALL and RUN
 1. Download files from this repository
 ```
